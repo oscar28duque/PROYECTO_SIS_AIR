@@ -16,6 +16,12 @@
 </head>
 
 <body>
+    <!-- 
+      ============================================
+      CABECERA (HEADER) Y NAVEGACIÓN
+      ============================================
+      Contiene el logo, los botones para cambiar de pestaña y las notificaciones.
+    -->
     <header>
         <div class="header-left">
             <img src="assets/logo.PNG" alt="SIS AIR" class="header-logo" onerror="this.style.display='none'">
@@ -54,7 +60,15 @@
 
     <main class="dashboard-container">
         
-        <!-- VISTA: DASHBOARD PRINCIPAL -->
+    <main class="dashboard-container">
+        
+        <!-- 
+          ============================================
+          VISTA 1: DASHBOARD PRINCIPAL
+          ============================================
+          Muestra las tarjetas con los valores actuales en tiempo real 
+          y las gráficas de evolución.
+        -->
         <div id="view-dashboard" class="view-section active">
             <!-- Tarjetas -->
             <section class="metrics-grid">
@@ -133,7 +147,12 @@
         </section>
         </div> <!-- FIN VISTA DASHBOARD -->
 
-        <!-- VISTA: ALERTAS -->
+        <!-- 
+          ============================================
+          VISTA 2: ALERTAS
+          ============================================
+          Muestra una lista grande con el historial de notificaciones y advertencias.
+        -->
         <div id="view-alertas" class="view-section" style="display: none;">
             <div class="card full-width-card">
                 <h2>Registro Completo de Alertas</h2>
@@ -147,7 +166,12 @@
         </div>
         <!-- FIN VISTA ALERTAS -->
 
-        <!-- VISTA: HISTORIAL COMPLETO -->
+        <!-- 
+          ============================================
+          VISTA 3: HISTORIAL COMPLETO
+          ============================================
+          Tabla que acumula todos los registros recibidos para generar un PDF.
+        -->
         <div id="view-historial" class="view-section" style="display: none;">
             <div class="card full-width-card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
@@ -178,7 +202,12 @@
         </div>
         <!-- FIN VISTA HISTORIAL COMPLETO -->
 
-        <!-- VISTA: MAPA DE SENSORES -->
+        <!-- 
+          ============================================
+          VISTA 4: MAPA DE SENSORES (Leaflet)
+          ============================================
+          Contiene el contenedor del mapa y las opciones exclusivas de administrador.
+        -->
         <div id="view-mapa" class="view-section" style="display: none;">
             <div class="card full-width-card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
@@ -196,7 +225,12 @@
 
     </main>
 
-    <!-- Modal Historial -->
+    <!-- 
+      ============================================
+      MODAL DE HISTORIAL RÁPIDO
+      ============================================
+      Ventana emergente que sale al hacer clic en una de las tarjetas principales.
+    -->
     <div id="history-modal" class="modal-overlay" style="display: none;">
         <div class="modal-content">
             <div class="modal-header">

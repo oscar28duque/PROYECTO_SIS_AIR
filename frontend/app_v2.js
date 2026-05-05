@@ -1,3 +1,11 @@
+/**
+ * ==========================================
+ * 1. CONFIGURACIÓN DE SUPABASE (BASE DE DATOS)
+ * ==========================================
+ * Aquí definimos la URL y la Llave Pública del proyecto en Supabase.
+ * Se utiliza 'var' en lugar de 'const' para que, si el archivo se recarga 
+ * múltiples veces (hot-reload en desarrollo), no lance un error de "variable ya declarada".
+ */
 var SUPABASE_URL = 'https://czbktgouidobpqtlvypz.supabase.co';
 var SUPABASE_KEY = 'sb_publishable_fP7QcD8MYEzPG2OgAGMSYw_SnNe8xUY';
 var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -8,7 +16,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log("DOM Content Loaded event fired");
     try {
 
-    // --- LÓGICA DE LOGIN / REGISTRO ---
+    /**
+     * ==========================================
+     * 2. LÓGICA DE LOGIN Y REGISTRO (index.html)
+     * ==========================================
+     * Esta sección solo se ejecuta si los formularios de login o registro existen.
+     * Permite alternar entre las vistas y maneja la autenticación con Supabase.
+     */
     const loginSection = document.getElementById('login-section');
     const registerSection = document.getElementById('register-section');
     
@@ -137,7 +151,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // --- LÓGICA DEL DASHBOARD ---
+    /**
+     * ==========================================
+     * 3. LÓGICA PRINCIPAL DEL DASHBOARD
+     * ==========================================
+     * Esta sección se ejecuta en 'dashboard.html'.
+     * Protege la ruta verificando si hay una sesión activa, asigna permisos
+     * de Administrador/Usuario, inicializa las gráficas, mapas y empieza a
+     * pedir datos al servidor periódicamente.
+     */
     if (document.getElementById('logout-btn')) {
         // Verificar sesión activa
         const { data: { session } } = await supabaseClient.auth.getSession();
@@ -249,6 +271,18 @@ let alertsHistory = [];
 let unreadAlerts = 0;
 let isMapEditMode = false;
 
+/**
+ * ==========================================
+ * 4. FUNCIONES DE ADMINISTRADOR Y MAPA
+ * ==========================================
+ */
+
+/**
+ * setupAdminMapControls()
+ * Si el usuario es admin, permite arrastrar y mover los marcadores
+ * de los sensores en el mapa. Guarda las nuevas ubicaciones en 'localStorage'
+ * para que persistan al recargar la página.
+ */
 function setupAdminMapControls() {
     const btnEdit = document.getElementById('btn-edit-map');
     const btnSave = document.getElementById('btn-save-map');
@@ -366,6 +400,12 @@ function openModalForType(type) {
     modal.style.display = 'flex';
 }
 
+/**
+ * ==========================================
+ * 5. INICIALIZACIÓN DE GRÁFICAS (Chart.js)
+ * ==========================================
+ * Prepara los 3 lienzos (canvas) para dibujar las gráficas en tiempo real.
+ */
 function initCharts() {
     const ctxParticulas = document.getElementById('particulasChart');
     const ctxGases = document.getElementById('gasesChart');
@@ -410,6 +450,13 @@ function initCharts() {
     });
 }
 
+/**
+ * ==========================================
+ * 6. INICIALIZACIÓN DEL MAPA (Leaflet)
+ * ==========================================
+ * Centra el mapa en Ubaté y lee las posiciones guardadas de los sensores
+ * desde el almacenamiento local del navegador.
+ */
 function initMap() {
     const mapContainer = document.getElementById('sensor-map');
     if (!mapContainer) return;
@@ -441,6 +488,13 @@ function initMap() {
     markerSur = L.marker([coords.sur.lat, coords.sur.lng], { icon: defaultIcon, draggable: false }).addTo(sensorMap).bindPopup("<b>Sensor Sur</b><br>Cargando...");
 }
 
+/**
+ * ==========================================
+ * 7. OBTENCIÓN DE DATOS (FETCH)
+ * ==========================================
+ * Realiza una petición GET al backend (simulado o real) para traer la
+ * información de los sensores actualizada.
+ */
 async function fetchData() {
     try {
         const response = await fetch('/api/analizar');
@@ -473,6 +527,13 @@ async function fetchData() {
 }
 
 // -- SISTEMA DE ALERTAS --
+/**
+ * ==========================================
+ * 9. SISTEMA DE ALERTAS
+ * ==========================================
+ * Revisa si los valores de contaminación superan los límites seguros.
+ * Si es así, crea una notificación visual en la campanita.
+ */
 function checkAlerts(data) {
     const now = new Date();
     const timeLabel = now.getHours() + ':' + now.getMinutes().toString().padStart(2, '0');
@@ -566,6 +627,13 @@ function renderFullHistory() {
 
 // -- FIN SISTEMA DE ALERTAS --
 
+/**
+ * ==========================================
+ * 8. ACTUALIZACIÓN DEL PANEL PRINCIPAL
+ * ==========================================
+ * Actualiza los textos, colores de los recuadros principales (PM2.5, NO2, etc.)
+ * y el color de los marcadores del mapa dependiendo del nivel de contaminación.
+ */
 function updateDashboard(data) {
     const applyAqiClass = (cardId, statusId, val, thresholds, labels) => {
         const card = document.getElementById(cardId);
@@ -680,7 +748,14 @@ function updateCharts(data) {
 }
 
 // -- SISTEMA DE GENERACIÓN DE PDF --
-function generatePDF() {
+/**
+ * ==========================================
+ * 10. GENERACIÓN DE REPORTES PDF
+ * ==========================================
+ * Utiliza la librería jsPDF y html2canvas para tomar "fotos" de las gráficas
+ * y armar un documento PDF descargable con el resumen de calidad del aire.
+ */
+async function generatePDF() {
     if (!window.jspdf || !window.jspdf.jsPDF) {
         alert("La librería PDF aún se está cargando. Intenta en un segundo.");
         return;

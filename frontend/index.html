@@ -11,6 +11,13 @@
 </head>
 
 <body class="login-body">
+    <!-- 
+      ============================================
+      SECCIÓN DE INICIO DE SESIÓN (LOGIN)
+      ============================================
+      Esta es la vista principal que carga por defecto.
+      Contiene el formulario para ingresar correo y contraseña.
+    -->
     <div class="login-container" id="login-section">
         <div class="logo-container">
             <img src="assets/logo_inicio.PNG" alt="SIS AIR Logo" class="login-logo" onerror="this.style.display='none'">
@@ -39,6 +46,13 @@
         </form>
     </div>
 
+    <!-- 
+      ============================================
+      SECCIÓN DE REGISTRO DE USUARIOS
+      ============================================
+      Este contenedor está oculto por defecto (display: none).
+      Se muestra únicamente cuando el usuario hace clic en "¿No tienes cuenta? Regístrate aquí".
+    -->
     <div class="login-container" id="register-section" style="display: none;">
         <div class="logo-container">
             <img src="assets/logo_inicio.PNG" alt="SIS AIR Logo" class="login-logo" onerror="this.style.display='none'">
@@ -71,6 +85,8 @@
             <p id="reg-success" style="display: none; color: green; font-size: 0.9rem; text-align: center; margin-top: 1rem;"></p>
         </form>
     </div>
+
+    <!-- Carga del archivo principal de JavaScript donde reside toda la lógica de autenticación -->
     <script src="app_v2.js"></script>
 </body>
 

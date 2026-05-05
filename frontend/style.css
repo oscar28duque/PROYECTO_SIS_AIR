@@ -1,3 +1,11 @@
+/*
+ * ==========================================
+ * HOJA DE ESTILOS PRINCIPAL (style.css)
+ * ==========================================
+ * Este archivo controla toda la apariencia visual de la aplicación.
+ * Define colores globales (variables), la estructura (layout) y los
+ * estilos responsivos (para que se vea bien en celulares y computadoras).
+ */
 :root {
     /* Tema Azul y Gris */
     --primary-blue: #1A5F7A;

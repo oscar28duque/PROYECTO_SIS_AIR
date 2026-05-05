@@ -1,5 +1,16 @@
+/**
+ * ==========================================
+ * BACKEND SIMULADO: GENERADOR DE DATOS DE SENSORES
+ * ==========================================
+ * Este archivo actúa como un servidor (Netlify Function).
+ * En la vida real, aquí es donde los sensores físicos (Arduino, Raspberry)
+ * enviarían sus datos a través de Internet.
+ * Por ahora, genera datos aleatorios realistas basados en la geografía 
+ * y condiciones meteorológicas reales del municipio de Ubaté.
+ */
 const { createClient } = require('@supabase/supabase-js');
 
+// Conexión a Supabase para guardar el historial generado
 const SUPABASE_URL = 'https://czbktgouidobpqtlvypz.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_fP7QcD8MYEzPG2OgAGMSYw_SnNe8xUY';
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
