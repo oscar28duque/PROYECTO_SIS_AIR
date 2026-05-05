@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Calidad del Aire - UDEC</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <div class="logo">SIS Air</div>
+        <h1>Dashboard de Calidad del Aire</h1>
+    </header>
+
+    <main class="dashboard">
+        <div class="card">
+            <h2>PM2.5</h2>
+            <div class="value" id="pm25-value">--</div>
+            <div class="unit">µg/m³</div>
+        </div>
+        <div class="card">
+            <h2>VOC</h2>
+            <div class="value" id="voc-value">--</div>
+            <div class="unit">ppm</div>
+        </div>
+        <div class="card">
+            <h2>Temperatura</h2>
+            <div class="value" id="temp-value">--</div>
+            <div class="unit">°C</div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

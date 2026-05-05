@@ -1,0 +1,263 @@
+:root {
+    /* Tema Azul y Gris (Ubaté) */
+    --primary-blue: #1A5F7A;
+    --secondary-blue: #227C9D;
+    --bg-color: #E5E7EB; /* Gris claro */
+    --card-bg: #FFFFFF;
+    --text-color: #333333;
+    
+    /* AQI Colors */
+    --aqi-good: #10B981; /* Verde */
+    --aqi-moderate: #F59E0B; /* Amarillo */
+    --aqi-bad: #EF4444; /* Rojo */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    min-height: 100vh;
+}
+
+/* --- LOGIN PAGE --- */
+.login-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, var(--primary-blue), var(--bg-color));
+}
+
+.login-container {
+    background-color: var(--card-bg);
+    padding: 3rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.logo-container {
+    margin-bottom: 2rem;
+}
+
+.login-logo {
+    width: 120px;
+    height: auto;
+    margin-bottom: 1rem;
+}
+
+.logo-container h1 {
+    color: var(--primary-blue);
+    font-size: 2rem;
+}
+
+.logo-container p {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.btn-primary {
+    background-color: var(--primary-blue);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: var(--secondary-blue);
+}
+
+.register-link {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.register-link a {
+    color: var(--primary-blue);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.error-msg {
+    color: var(--aqi-bad);
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
+/* --- DASHBOARD PAGE --- */
+header {
+    background-color: var(--primary-blue);
+    color: white;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.header-logo {
+    width: 50px;
+    height: auto;
+}
+
+.header-titles h1 {
+    font-size: 1rem;
+    font-weight: 400;
+    opacity: 0.8;
+}
+
+.logo-text {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.btn-secondary {
+    background-color: transparent;
+    border: 1px solid white;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.btn-secondary:hover {
+    background-color: white;
+    color: var(--primary-blue);
+}
+
+.dashboard-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Metrics Grid */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.card {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border-top: 5px solid #ccc; /* Default border */
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card h2 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: #555;
+}
+
+.card .value {
+    font-size: 3rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.card .unit {
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.card .status {
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+/* AQI Classes */
+.aqi-good { border-top-color: var(--aqi-good); }
+.aqi-good .value, .aqi-good .status { color: var(--aqi-good); }
+
+.aqi-moderate { border-top-color: var(--aqi-moderate); }
+.aqi-moderate .value, .aqi-moderate .status { color: var(--aqi-moderate); }
+
+.aqi-bad { border-top-color: var(--aqi-bad); }
+.aqi-bad .value, .aqi-bad .status { color: var(--aqi-bad); }
+
+/* Charts */
+.charts-section {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+/* Action Section */
+.action-section {
+    text-align: center;
+}
+
+.btn-large {
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    width: auto;
+}
+
+.plan-result {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    border-left: 4px solid var(--primary-blue);
+    text-align: left;
+}

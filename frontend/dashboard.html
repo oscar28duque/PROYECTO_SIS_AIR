@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard SIS AIR - Ubaté</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Incluir Chart.js para las gráficas -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <img src="assets/logo.png" alt="SIS AIR" class="header-logo" onerror="this.style.display='none'">
+            <div class="header-titles">
+                <div class="logo-text">SIS AIR</div>
+                <h1>Monitoreo - Ubaté</h1>
+            </div>
+        </div>
+        <div class="header-right">
+            <button id="logout-btn" class="btn-secondary">Cerrar Sesión</button>
+        </div>
+    </header>
+    
+    <main class="dashboard-container">
+        <section class="metrics-grid">
+            <div class="card" id="card-pm25">
+                <h2>PM2.5</h2>
+                <div class="value" id="pm25-value">--</div>
+                <div class="unit">µg/m³</div>
+                <div class="status" id="pm25-status">Calculando...</div>
+            </div>
+            <div class="card" id="card-voc">
+                <h2>VOC</h2>
+                <div class="value" id="voc-value">--</div>
+                <div class="unit">ppm</div>
+                <div class="status" id="voc-status">Calculando...</div>
+            </div>
+            <div class="card" id="card-temp">
+                <h2>Temperatura</h2>
+                <div class="value" id="temp-value">--</div>
+                <div class="unit">°C</div>
+                <div class="status">Normal</div>
+            </div>
+        </section>
+
+        <section class="charts-section">
+            <div class="chart-container">
+                <canvas id="airQualityChart"></canvas>
+            </div>
+        </section>
+
+        <section class="action-section">
+            <button id="btn-purificacion" class="btn-primary btn-large">Generar Plan de Purificación</button>
+            <div id="plan-result" class="plan-result" style="display: none;">
+                <!-- Aquí aparecerá el plan generado por IA en el futuro -->
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
