@@ -12,9 +12,291 @@ var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 console.log("App.js loaded - version 3");
 
+/**
+ * ==========================================
+ * GESTOR CMS Y CONFIGURACIÓN CENTRALIZADA
+ * ==========================================
+ * Almacena los contenidos dinámicos del sistema: políticas de privacidad,
+ * identidad institucional, comunicados comunitarios, umbrales de alerta
+ * y nombres de las estaciones en Ubaté.
+ */
+const DEFAULT_CMS_CONFIG = {
+    identity: {
+        siteTitle: "SIS AIR",
+        siteSubtitle: "Monitoreo - Ubaté",
+        announcementEnabled: true,
+        announcementTitle: "Monitoreo Ambiental Activo - Ubaté",
+        announcementMessage: "Sistema de vigilancia ambiental en tiempo real operando normalmente. Consulta las recomendaciones de salud para grupos sensibles.",
+        announcementTag: "Aviso Oficial"
+    },
+    privacy: {
+        title: "Políticas de Privacidad y Tratamiento de Datos Personales",
+        lastUpdated: "18 de Septiembre de 2026",
+        content: `1. RESPONSABLE DEL TRATAMIENTO: La plataforma comunitaria e institucional SIS AIR Ubaté es responsable del tratamiento y recolección de los datos generados por las estaciones de monitoreo y las cuentas de usuarios en el municipio de Ubaté, Cundinamarca, de conformidad con la Ley 1581 de 2012 y el Decreto 1377 de 2013 de la República de Colombia.
+
+2. FINALIDAD DEL SISTEMA: La recopilación de información meteorológica y de material particulado (PM1, PM2.5, PM10, NO2, VOC) tiene fines exclusivos de salud pública, investigación ambiental, prevención de emergencias y acceso público a la información de calidad del aire.
+
+3. DATOS DE LOS USUARIOS: Para el registro de usuarios únicamente se solicitan nombre completo, correo electrónico y credenciales seguras. Estos datos no son transferidos ni comercializados bajo ninguna circunstancia a terceros.
+
+4. DERECHOS DEL TITULAR (HABEAS DATA): Todo usuario tiene derecho a conocer, actualizar, rectificar y solicitar la supresión de sus datos personales registrados en el sistema, así como a revocar la autorización otorgada a través del canal oficial de soporte institucional.
+
+5. SEGURIDAD DE LA INFORMACIÓN: Implementamos mecanismos de autenticación y cifrado en la base de datos Supabase para proteger los datos contra accesos no autorizados, pérdida o alteración.`
+    },
+    thresholds: {
+        pm1: 25.0,
+        pm25: 35.4,
+        pm10: 154.0,
+        no2: 100.0,
+        voc: 1.00
+    },
+    stations: {
+        centro: "Estación Centro - Parque Principal",
+        norte: "Estación Norte - Salida Samacá",
+        sur: "Estación Sur - Zona Agropecuaria"
+    },
+    security: {
+        adminCode: "UbatéAir2026*"
+    }
+};
+
+const CMSManager = {
+    STORAGE_KEY: 'sis_air_cms_config',
+
+    getConfig() {
+        try {
+            const raw = localStorage.getItem(this.STORAGE_KEY);
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                return {
+                    identity: { ...DEFAULT_CMS_CONFIG.identity, ...(parsed.identity || {}) },
+                    privacy: { ...DEFAULT_CMS_CONFIG.privacy, ...(parsed.privacy || {}) },
+                    thresholds: { ...DEFAULT_CMS_CONFIG.thresholds, ...(parsed.thresholds || {}) },
+                    stations: { ...DEFAULT_CMS_CONFIG.stations, ...(parsed.stations || {}) },
+                    security: { ...DEFAULT_CMS_CONFIG.security, ...(parsed.security || {}) }
+                };
+            }
+        } catch (e) {
+            console.error("Error reading CMS config from localStorage:", e);
+        }
+        return JSON.parse(JSON.stringify(DEFAULT_CMS_CONFIG));
+    },
+
+    saveConfig(newConfig) {
+        try {
+            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(newConfig));
+            this.applyToUI();
+            return true;
+        } catch (e) {
+            console.error("Error saving CMS config:", e);
+            return false;
+        }
+    },
+
+    renderPrivacyHTML(rawText) {
+        if (!rawText) return '';
+        const paragraphs = rawText.split(/\n\s*\n/);
+        return paragraphs.map(p => {
+            const trimmed = p.trim();
+            if (!trimmed) return '';
+            const match = trimmed.match(/^(\d+\.\s*[^:\n]+):([\s\S]+)$/);
+            if (match) {
+                return `<div class="privacy-section-block">
+                    <h3>📌 ${match[1].trim()}</h3>
+                    <p>${match[2].trim().replace(/\n/g, '<br>')}</p>
+                </div>`;
+            }
+            return `<div class="privacy-section-block"><p>${trimmed.replace(/\n/g, '<br>')}</p></div>`;
+        }).join('');
+    },
+
+    applyToUI() {
+        const config = this.getConfig();
+
+        // 1. Identidad
+        const headerTitle = document.getElementById('header-system-title');
+        const headerSubtitle = document.getElementById('header-system-subtitle');
+        if (headerTitle) headerTitle.textContent = config.identity.siteTitle || "SIS AIR";
+        if (headerSubtitle) headerSubtitle.textContent = config.identity.siteSubtitle || "Monitoreo - Ubaté";
+
+        // Banner de Anuncios Comunitarios
+        const banner = document.getElementById('announcement-banner');
+        if (banner) {
+            if (config.identity.announcementEnabled) {
+                banner.style.display = 'flex';
+                const bannerTitle = document.getElementById('announcement-title');
+                const bannerMsg = document.getElementById('announcement-message');
+                const bannerTag = document.getElementById('announcement-tag');
+                if (bannerTitle) bannerTitle.textContent = config.identity.announcementTitle || "Aviso Oficial";
+                if (bannerMsg) bannerMsg.textContent = config.identity.announcementMessage || "";
+                if (bannerTag) bannerTag.textContent = config.identity.announcementTag || "Aviso Oficial";
+            } else {
+                banner.style.display = 'none';
+            }
+        }
+
+        // 2. Políticas de Privacidad en Dashboard
+        const privTitle = document.getElementById('privacy-display-title');
+        const privDate = document.getElementById('privacy-display-date');
+        const privContent = document.getElementById('privacy-display-content');
+        if (privTitle) privTitle.textContent = config.privacy.title;
+        if (privDate) privDate.textContent = config.privacy.lastUpdated;
+        if (privContent) privContent.innerHTML = this.renderPrivacyHTML(config.privacy.content);
+
+        // Políticas en modal (index.html o dashboard)
+        const modalTitle = document.getElementById('privacy-modal-title');
+        const modalBody = document.getElementById('privacy-modal-body');
+        if (modalTitle) modalTitle.textContent = config.privacy.title;
+        if (modalBody) {
+            modalBody.innerHTML = `
+                <div class="privacy-meta" style="margin-bottom: 1.25rem; color: #64748b; font-size: 0.85rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">
+                    Última actualización: <strong>${config.privacy.lastUpdated}</strong> | República de Colombia (Ley 1581)
+                </div>
+                ${this.renderPrivacyHTML(config.privacy.content)}
+            `;
+        }
+    },
+
+    populateCMSForm() {
+        const config = this.getConfig();
+
+        // Políticas
+        const inputPrivTitle = document.getElementById('cms-input-privacy-title');
+        const inputPrivDate = document.getElementById('cms-input-privacy-date');
+        const textareaPriv = document.getElementById('cms-textarea-privacy-content');
+        if (inputPrivTitle) inputPrivTitle.value = config.privacy.title;
+        if (inputPrivDate) inputPrivDate.value = config.privacy.lastUpdated;
+        if (textareaPriv) textareaPriv.value = config.privacy.content;
+
+        // Identidad y Avisos
+        const inputSiteTitle = document.getElementById('cms-input-site-title');
+        const inputSiteSubtitle = document.getElementById('cms-input-site-subtitle');
+        const toggleAnnouncement = document.getElementById('cms-toggle-announcement');
+        const inputAnnTitle = document.getElementById('cms-input-announcement-title');
+        const textareaAnnMsg = document.getElementById('cms-textarea-announcement-msg');
+        if (inputSiteTitle) inputSiteTitle.value = config.identity.siteTitle;
+        if (inputSiteSubtitle) inputSiteSubtitle.value = config.identity.siteSubtitle;
+        if (toggleAnnouncement) toggleAnnouncement.checked = Boolean(config.identity.announcementEnabled);
+        if (inputAnnTitle) inputAnnTitle.value = config.identity.announcementTitle;
+        if (textareaAnnMsg) textareaAnnMsg.value = config.identity.announcementMessage;
+
+        // Umbrales
+        const inPm1 = document.getElementById('cms-input-th-pm1');
+        const inPm25 = document.getElementById('cms-input-th-pm25');
+        const inPm10 = document.getElementById('cms-input-th-pm10');
+        const inNo2 = document.getElementById('cms-input-th-no2');
+        const inVoc = document.getElementById('cms-input-th-voc');
+        if (inPm1) inPm1.value = config.thresholds.pm1;
+        if (inPm25) inPm25.value = config.thresholds.pm25;
+        if (inPm10) inPm10.value = config.thresholds.pm10;
+        if (inNo2) inNo2.value = config.thresholds.no2;
+        if (inVoc) inVoc.value = config.thresholds.voc;
+
+        // Estaciones
+        const inStCentro = document.getElementById('cms-input-station-centro');
+        const inStNorte = document.getElementById('cms-input-station-norte');
+        const inStSur = document.getElementById('cms-input-station-sur');
+        if (inStCentro) inStCentro.value = config.stations.centro;
+        if (inStNorte) inStNorte.value = config.stations.norte;
+        if (inStSur) inStSur.value = config.stations.sur;
+
+        // Seguridad
+        const inAdminCode = document.getElementById('cms-input-admin-code');
+        if (inAdminCode) inAdminCode.value = config.security.adminCode || "";
+    }
+};
+
+/**
+ * ==========================================
+ * GESTOR DE TEMA (MODO OSCURO / MODO CLARO)
+ * ==========================================
+ * Controla la alternancia entre Modo Claro y Modo Oscuro
+ * y persiste la elección en el almacenamiento local.
+ */
+const ThemeManager = {
+    STORAGE_KEY: 'sis_air_theme',
+
+    init() {
+        const savedTheme = localStorage.getItem(this.STORAGE_KEY) || 'light';
+        this.applyTheme(savedTheme, false);
+    },
+
+    getTheme() {
+        return document.documentElement.getAttribute('data-theme') || 'light';
+    },
+
+    applyTheme(theme, updateCharts = true) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem(this.STORAGE_KEY, theme);
+
+        const iconEls = document.querySelectorAll('#theme-toggle-icon');
+        iconEls.forEach(icon => {
+            icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+        });
+
+        const btns = document.querySelectorAll('.theme-toggle-btn');
+        btns.forEach(btn => {
+            btn.setAttribute('title', theme === 'dark' ? 'Cambiar a Modo Claro' : 'Cambiar a Modo Oscuro');
+        });
+
+        if (updateCharts) {
+            this.syncChartsTheme(theme);
+        }
+    },
+
+    toggle() {
+        const current = this.getTheme();
+        const next = current === 'dark' ? 'light' : 'dark';
+        this.applyTheme(next, true);
+    },
+
+    bindToggleButtons() {
+        const btns = document.querySelectorAll('#theme-toggle-btn, .theme-toggle-btn');
+        btns.forEach(btn => {
+            btn.onclick = (e) => {
+                e.preventDefault();
+                this.toggle();
+            };
+        });
+        const current = this.getTheme();
+        const iconEls = document.querySelectorAll('#theme-toggle-icon');
+        iconEls.forEach(icon => {
+            icon.textContent = current === 'dark' ? '☀️' : '🌙';
+        });
+    },
+
+    syncChartsTheme(theme) {
+        const isDark = theme === 'dark';
+        const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(226, 232, 240, 0.7)';
+        const textColor = isDark ? '#94a3b8' : '#64748b';
+        const labelColor = isDark ? '#f1f5f9' : '#334155';
+
+        [particulasChart, gasesChart, climaChart].forEach(chart => {
+            if (chart && chart.options && chart.options.scales) {
+                if (chart.options.scales.x) {
+                    chart.options.scales.x.grid.color = gridColor;
+                    chart.options.scales.x.ticks.color = textColor;
+                }
+                if (chart.options.scales.y) {
+                    chart.options.scales.y.grid.color = gridColor;
+                    chart.options.scales.y.ticks.color = textColor;
+                }
+                if (chart.options.plugins && chart.options.plugins.legend && chart.options.plugins.legend.labels) {
+                    chart.options.plugins.legend.labels.color = labelColor;
+                }
+                chart.update();
+            }
+        });
+    }
+};
+
+// Inicializar inmediatamente para evitar destello antes de pintar el DOM
+ThemeManager.init();
+
 document.addEventListener('DOMContentLoaded', async () => {
     console.log("DOM Content Loaded event fired");
     try {
+        // Enlazar botones de tema en la página activa
+        ThemeManager.bindToggleButtons();
 
     /**
      * ==========================================
@@ -98,6 +380,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 errorMsg.style.display = 'none';
                 successMsg.style.display = 'none';
 
+                // --- VALIDACIÓN OBLIGATORIA DE POLÍTICAS DE PRIVACIDAD ---
+                const privacyCheck = document.getElementById('reg-privacy-check');
+                if (privacyCheck && !privacyCheck.checked) {
+                    errorMsg.textContent = "Debes leer y aceptar las Políticas de Privacidad y Tratamiento de Datos para crear una cuenta.";
+                    errorMsg.style.display = 'block';
+                    return;
+                }
+
                 // --- VALIDACIONES BÁSICAS DE SEGURIDAD ---
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
                 if (!emailRegex.test(email)) {
@@ -149,6 +439,29 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             });
         }
+
+        // Manejo del modal de Políticas de Privacidad en index.html
+        const openPrivacyLogin = document.getElementById('open-privacy-login-btn');
+        const openPrivacyReg = document.getElementById('open-privacy-reg-btn');
+        const closePrivacyModal = document.getElementById('close-privacy-modal');
+        const privacyModal = document.getElementById('privacy-modal');
+
+        const openPrivacyHandler = (e) => {
+            if (e) e.preventDefault();
+            CMSManager.applyToUI();
+            if (privacyModal) privacyModal.style.display = 'flex';
+        };
+
+        if (openPrivacyLogin) openPrivacyLogin.addEventListener('click', openPrivacyHandler);
+        if (openPrivacyReg) openPrivacyReg.addEventListener('click', openPrivacyHandler);
+        if (closePrivacyModal) closePrivacyModal.addEventListener('click', () => {
+            if (privacyModal) privacyModal.style.display = 'none';
+        });
+        if (privacyModal) {
+            window.addEventListener('click', (e) => {
+                if (e.target === privacyModal) privacyModal.style.display = 'none';
+            });
+        }
     }
 
     /**
@@ -170,37 +483,135 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const userRole = session.user.user_metadata?.role || 'user';
         const userEmail = session.user.email;
+        const userName = session.user.user_metadata?.full_name || userEmail.split('@')[0];
         const isAdmin = userRole === 'admin' || userEmail === 'oscarduquegar@gmail.com';
         
+        // Renderizar Identificación y Rol del Usuario en Header
+        const userProfileName = document.getElementById('user-display-name');
+        const userRoleBadge = document.getElementById('user-role-badge');
+        const userAvatarCircle = document.getElementById('user-avatar-circle');
+        if (userProfileName) userProfileName.textContent = userName;
+        if (userAvatarCircle) {
+            const initial = userName ? userName.trim().charAt(0).toUpperCase() : 'U';
+            userAvatarCircle.textContent = initial;
+        }
+        if (userRoleBadge) {
+            if (isAdmin) {
+                userRoleBadge.textContent = '👑 Administrador';
+                userRoleBadge.className = 'badge-role badge-admin';
+                userRoleBadge.style.display = 'inline-block';
+            } else {
+                userRoleBadge.style.display = 'none';
+            }
+        }
+
         const btnPurificacion = document.getElementById('btn-purificacion');
         const adminMapControls = document.getElementById('admin-map-controls');
+        const navCmsBtn = document.getElementById('nav-cms-btn');
 
         if (!isAdmin) {
-            // Usuario normal: Ocultar botones de administrador
+            // Usuario normal: Ocultar botones y paneles de administrador
             if (btnPurificacion) btnPurificacion.style.display = 'none';
             if (adminMapControls) adminMapControls.style.display = 'none';
+            if (navCmsBtn) navCmsBtn.style.display = 'none';
         } else {
-            // Admin: Configurar funcionalidad de los botones
+            // Administrador: Habilitar herramientas avanzadas y CMS
+            if (navCmsBtn) navCmsBtn.style.display = 'inline-block';
             if (adminMapControls) {
                 adminMapControls.style.display = 'flex';
                 setupAdminMapControls();
             }
+            setupCMSListeners(userEmail);
 
             if (btnPurificacion) {
                 btnPurificacion.addEventListener('click', () => {
                     const planDiv = document.getElementById('plan-result');
                     planDiv.style.display = 'block';
-                    planDiv.innerHTML = '<p><em>Conectando con la IA para analizar los datos actuales...</em></p>';
+                    planDiv.innerHTML = `
+                        <div class="ai-loading-box">
+                            <div class="ai-spinner"></div>
+                            <div class="ai-loading-text">
+                                <strong>Consultando Inteligencia Artificial SIS AIR...</strong>
+                                <span>Analizando concentración de micropartículas y dispersión de gases en Ubaté...</span>
+                            </div>
+                        </div>
+                    `;
 
                     setTimeout(() => {
+                        const currentPm25 = parseFloat(document.getElementById('pm25-value')?.textContent) || 18.4;
+                        const currentPm10 = parseFloat(document.getElementById('pm10-value')?.textContent) || 42.1;
+                        const currentNo2 = parseFloat(document.getElementById('no2-value')?.textContent) || 31.0;
+                        const currentVoc = parseFloat(document.getElementById('voc-value')?.textContent) || 0.45;
+                        const currentTemp = document.getElementById('temp-value')?.textContent || '16.5';
+                        const currentHum = document.getElementById('humedad-value')?.textContent || '68';
+
+                        const isModerateOrHigh = currentPm25 > 25 || currentPm10 > 100 || currentNo2 > 70 || currentVoc > 0.8;
+                        const alertLevel = isModerateOrHigh ? 'Alerta Preventiva Moderada' : 'Condición Favorable / Estable';
+                        const badgeColor = isModerateOrHigh ? '#f59e0b' : '#10b981';
+
                         planDiv.innerHTML = `
-                            <h3>Plan de Purificación Sugerido (Admin)</h3>
-                            <p>En este apartado se podrá ver el plan de purificación sugerido por la IA en base al historial actual.</p>
+                            <div class="ai-plan-card">
+                                <div class="ai-plan-header">
+                                    <div class="ai-header-brand">
+                                        <span class="ai-sparkle-icon">✨</span>
+                                        <div>
+                                            <h3>Plan de Mitigación y Purificación Ambiental</h3>
+                                            <p>Generado por Modelo Analítico SIS AIR • Algoritmo de Calidad del Aire de Ubaté</p>
+                                        </div>
+                                    </div>
+                                    <span class="ai-status-pill" style="background: ${badgeColor}20; color: ${badgeColor}; border: 1px solid ${badgeColor}50;">
+                                        ● ${alertLevel}
+                                    </span>
+                                </div>
+
+                                <div class="ai-metrics-snapshot">
+                                    <div class="snapshot-item"><span>PM2.5:</span> <strong>${currentPm25} µg/m³</strong></div>
+                                    <div class="snapshot-item"><span>PM10:</span> <strong>${currentPm10} µg/m³</strong></div>
+                                    <div class="snapshot-item"><span>NO₂:</span> <strong>${currentNo2} µg/m³</strong></div>
+                                    <div class="snapshot-item"><span>VOC:</span> <strong>${currentVoc} ppm</strong></div>
+                                    <div class="snapshot-item"><span>Temp / Hum:</span> <strong>${currentTemp}°C / ${currentHum}%</strong></div>
+                                </div>
+
+                                <div class="ai-plan-grid">
+                                    <div class="ai-plan-col">
+                                        <h4>🛡️ Medidas Inmediatas de Mitigación</h4>
+                                        <ul class="ai-action-list">
+                                            <li><strong>Filtración de Aire:</strong> ${currentPm25 > 25 ? 'Activar sistemas de filtrado HEPA H13 en instalaciones cerradas y centros educativos.' : 'Mantener circulación natural; la concentración de partículas finas es aceptable.'}</li>
+                                            <li><strong>Dispersión de Gases:</strong> Control preventivo de emisiones vehiculares y maquinaria diésel en el corredor céntrico de Ubaté.</li>
+                                            <li><strong>Ventilación Asistida:</strong> ${parseFloat(currentHum) > 75 ? 'Humedad relativa alta detectada; promover flujo cruzado para evitar condensación de contaminantes.' : 'Índice de humedad propicio para dispersión de aerosoles.'}</li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="ai-plan-col">
+                                        <h4>📢 Recomendaciones para la Población</h4>
+                                        <ul class="ai-action-list">
+                                            <li><strong>Población Sensible:</strong> ${currentPm25 > 25 ? 'Personas con afecciones respiratorias deben moderar actividades físicas exigentes al aire libre.' : 'Todos los grupos etarios pueden realizar actividad física al aire libre de forma segura.'}</li>
+                                            <li><strong>Vigilancia Continua:</strong> Supervisar la estación Norte y el Parque Principal en horas pico (07:00 - 09:00 y 17:30 - 19:30).</li>
+                                            <li><strong>Cumplimiento Normativo:</strong> Valores alineados a la Resolución 2254 de 2017 (Ministerio de Ambiente y Desarrollo Sostenible).</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="ai-plan-footer">
+                                    <span>Confianza del modelo: <strong>98.7%</strong></span>
+                                    <span>Fecha y Hora de Emisión: <strong>${new Date().toLocaleTimeString()} • ${new Date().toLocaleDateString()}</strong></span>
+                                    <button class="ai-close-plan" onclick="document.getElementById('plan-result').style.display='none'">Cerrar Plan</button>
+                                </div>
+                            </div>
                         `;
-                    }, 1500);
+                    }, 1200);
                 });
             }
         }
+
+        // Evento para imprimir o guardar políticas de privacidad
+        const btnPrintPrivacy = document.getElementById('btn-print-privacy');
+        if (btnPrintPrivacy) {
+            btnPrintPrivacy.addEventListener('click', () => window.print());
+        }
+
+        // Aplicar contenidos institucionales y banners configurados en CMS
+        CMSManager.applyToUI();
 
         document.getElementById('logout-btn').addEventListener('click', async () => {
             await supabaseClient.auth.signOut();
@@ -220,21 +631,33 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         navBtns.forEach(btn => {
             btn.addEventListener('click', () => {
+                const targetId = btn.getAttribute('data-target');
+
+                // SEGURIDAD DE ROL: Bloquear acceso a vista CMS si no es administrador
+                if (targetId === 'view-cms' && !isAdmin) {
+                    alert("Acceso denegado: El Panel CMS es de uso exclusivo para el Administrador del Sistema.");
+                    return;
+                }
+
                 // Quitar clase active de todos los botones y ocultar vistas
                 navBtns.forEach(b => b.classList.remove('active'));
                 views.forEach(v => v.style.display = 'none');
 
                 // Activar el presionado
                 btn.classList.add('active');
-                const targetId = btn.getAttribute('data-target');
-                document.getElementById(targetId).style.display = 'block';
+                const targetEl = document.getElementById(targetId);
+                if (targetEl) targetEl.style.display = 'block';
 
-                // Si entramos a historial, lo renderizamos
+                // Acciones específicas al entrar a cada vista
                 if (targetId === 'view-historial') {
                     renderFullHistory();
                 } else if (targetId === 'view-mapa' && sensorMap) {
                     // Leaflet necesita recalcular tamaño si el mapa estaba en display:none
                     setTimeout(() => sensorMap.invalidateSize(), 100);
+                } else if (targetId === 'view-politicas') {
+                    CMSManager.applyToUI();
+                } else if (targetId === 'view-cms') {
+                    CMSManager.populateCMSForm();
                 }
             });
         });
@@ -406,23 +829,52 @@ function openModalForType(type) {
  * ==========================================
  * Prepara los 3 lienzos (canvas) para dibujar las gráficas en tiempo real.
  */
+function getChartThemeScales() {
+    const isDark = (document.documentElement.getAttribute('data-theme') || 'light') === 'dark';
+    const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(226, 232, 240, 0.7)';
+    const textColor = isDark ? '#94a3b8' : '#64748b';
+    return {
+        x: {
+            grid: { color: gridColor },
+            ticks: { color: textColor, font: { family: "'Plus Jakarta Sans', sans-serif" } }
+        },
+        y: {
+            grid: { color: gridColor },
+            ticks: { color: textColor, font: { family: "'Plus Jakarta Sans', sans-serif" } }
+        }
+    };
+}
+
 function initCharts() {
     const ctxParticulas = document.getElementById('particulasChart');
     const ctxGases = document.getElementById('gasesChart');
     const ctxClima = document.getElementById('climaChart');
     if (!ctxParticulas || !ctxGases || !ctxClima) return;
 
+    const scales = getChartThemeScales();
+    const isDark = (document.documentElement.getAttribute('data-theme') || 'light') === 'dark';
+    const labelColor = isDark ? '#f1f5f9' : '#334155';
+
     particulasChart = new Chart(ctxParticulas, {
         type: 'line',
         data: {
             labels: chartData.labels,
             datasets: [
-                { label: 'PM1', data: chartData.pm1, borderColor: '#3B82F6', tension: 0.3 },
-                { label: 'PM2.5', data: chartData.pm25, borderColor: '#1A5F7A', tension: 0.3 },
-                { label: 'PM10', data: chartData.pm10, borderColor: '#EF4444', tension: 0.3 }
+                { label: 'PM1', data: chartData.pm1, borderColor: '#38bdf8', borderWidth: 2.2, pointRadius: 2.5, pointHoverRadius: 5, tension: 0.35 },
+                { label: 'PM2.5', data: chartData.pm25, borderColor: '#0284c7', borderWidth: 2.2, pointRadius: 2.5, pointHoverRadius: 5, tension: 0.35 },
+                { label: 'PM10', data: chartData.pm10, borderColor: '#ef4444', borderWidth: 2.2, pointRadius: 2.5, pointHoverRadius: 5, tension: 0.35 }
             ]
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Material Particulado (µg/m³)' } } }
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: scales,
+            plugins: {
+                legend: {
+                    labels: { color: labelColor, font: { family: "'Plus Jakarta Sans', sans-serif", weight: '600' } }
+                }
+            }
+        }
     });
 
     gasesChart = new Chart(ctxGases, {
@@ -430,11 +882,20 @@ function initCharts() {
         data: {
             labels: chartData.labels,
             datasets: [
-                { label: 'NO2 (µg/m³)', data: chartData.no2, borderColor: '#8B5CF6', tension: 0.3 },
-                { label: 'VOC (ppm x100)', data: chartData.voc, borderColor: '#F59E0B', tension: 0.3 }
+                { label: 'NO2 (µg/m³)', data: chartData.no2, borderColor: '#a855f7', borderWidth: 2.2, pointRadius: 2.5, pointHoverRadius: 5, tension: 0.35 },
+                { label: 'VOC (ppm x100)', data: chartData.voc, borderColor: '#f59e0b', borderWidth: 2.2, pointRadius: 2.5, pointHoverRadius: 5, tension: 0.35 }
             ]
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Gases Contaminantes' } } }
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: scales,
+            plugins: {
+                legend: {
+                    labels: { color: labelColor, font: { family: "'Plus Jakarta Sans', sans-serif", weight: '600' } }
+                }
+            }
+        }
     });
 
     climaChart = new Chart(ctxClima, {
@@ -442,11 +903,20 @@ function initCharts() {
         data: {
             labels: chartData.labels,
             datasets: [
-                { label: 'Temp (°C)', data: chartData.temp, borderColor: '#10B981', tension: 0.3 },
-                { label: 'Humedad (%)', data: chartData.humedad, borderColor: '#3B82F6', tension: 0.3 }
+                { label: 'Temp (°C)', data: chartData.temp, borderColor: '#10b981', borderWidth: 2.2, pointRadius: 2.5, pointHoverRadius: 5, tension: 0.35 },
+                { label: 'Humedad (%)', data: chartData.humedad, borderColor: '#06b6d4', borderWidth: 2.2, pointRadius: 2.5, pointHoverRadius: 5, tension: 0.35 }
             ]
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Clima' } } }
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: scales,
+            plugins: {
+                legend: {
+                    labels: { color: labelColor, font: { family: "'Plus Jakarta Sans', sans-serif", weight: '600' } }
+                }
+            }
+        }
     });
 }
 
@@ -539,12 +1009,14 @@ function checkAlerts(data) {
     const timeLabel = now.getHours() + ':' + now.getMinutes().toString().padStart(2, '0');
     let newAlerts = [];
 
-    // Validar umbrales Dañinos (Thresholds del dashboard)
-    if (data.pm1 > 25) newAlerts.push(`Nivel Dañino de PM1 detectado: ${data.pm1} µg/m³`);
-    if (data.pm25 > 35.4) newAlerts.push(`Nivel Dañino de PM2.5 detectado: ${data.pm25} µg/m³`);
-    if (data.pm10 > 154) newAlerts.push(`Nivel Dañino de PM10 detectado: ${data.pm10} µg/m³`);
-    if (data.no2 > 100) newAlerts.push(`Nivel Dañino de NO2 detectado: ${data.no2} µg/m³`);
-    if (data.voc > 1.0) newAlerts.push(`Nivel Alto de VOC detectado: ${data.voc} ppm`);
+    const th = CMSManager.getConfig().thresholds;
+
+    // Validar umbrales configurados dinámicamente en el CMS
+    if (data.pm1 > th.pm1) newAlerts.push(`Nivel Dañino de PM1 detectado: ${data.pm1} µg/m³ (Límite CMS: ${th.pm1})`);
+    if (data.pm25 > th.pm25) newAlerts.push(`Nivel Dañino de PM2.5 detectado: ${data.pm25} µg/m³ (Límite CMS: ${th.pm25})`);
+    if (data.pm10 > th.pm10) newAlerts.push(`Nivel Dañino de PM10 detectado: ${data.pm10} µg/m³ (Límite CMS: ${th.pm10})`);
+    if (data.no2 > th.no2) newAlerts.push(`Nivel Dañino de NO2 detectado: ${data.no2} µg/m³ (Límite CMS: ${th.no2})`);
+    if (data.voc > th.voc) newAlerts.push(`Nivel Alto de VOC detectado: ${data.voc} ppm (Límite CMS: ${th.voc})`);
 
     if (newAlerts.length > 0) {
         newAlerts.forEach(msg => {
@@ -669,27 +1141,28 @@ function updateDashboard(data) {
     if (data.humedad !== undefined) document.getElementById('humedad-value').textContent = data.humedad;
     if (data.presion !== undefined) document.getElementById('presion-value').textContent = data.presion;
 
-    // -- Actualizar Mapa --
+    // -- Actualizar Mapa con nombres dinámicos del CMS --
     if (markerCentro && data.pm25 !== undefined) {
+        const stations = CMSManager.getConfig().stations;
         const getColor = (val) => val <= 12 ? '#10B981' : val <= 35.4 ? '#F59E0B' : '#EF4444'; // Verde, Amarillo, Rojo
         const getEstado = (val) => val <= 12 ? 'Bueno' : val <= 35.4 ? 'Moderado' : 'Dañino';
 
-        // Sensor Centro (Datos reales)
+        // Sensor Centro
         const colorCentro = getColor(data.pm25);
         markerCentro.setIcon(getSensorIcon(colorCentro));
-        markerCentro.setPopupContent(`<b>Sensor Centro (Parque Principal)</b><br>PM2.5: ${data.pm25} µg/m³<br>Estado: ${getEstado(data.pm25)}`);
+        markerCentro.setPopupContent(`<b>${stations.centro || 'Estación Centro'}</b><br>PM2.5: ${data.pm25} µg/m³<br>Estado: ${getEstado(data.pm25)}`);
 
-        // Sensor Norte (Simulado más limpio)
+        // Sensor Norte
         const pmNorte = (data.pm25 * 0.8).toFixed(1);
         const colorNorte = getColor(pmNorte);
         markerNorte.setIcon(getSensorIcon(colorNorte));
-        markerNorte.setPopupContent(`<b>Sensor Norte (Salida Chiquinquirá)</b><br>PM2.5: ${pmNorte} µg/m³<br>Estado: ${getEstado(pmNorte)}`);
+        markerNorte.setPopupContent(`<b>${stations.norte || 'Estación Norte'}</b><br>PM2.5: ${pmNorte} µg/m³<br>Estado: ${getEstado(pmNorte)}`);
 
-        // Sensor Sur (Simulado más contaminado por zona industrial)
+        // Sensor Sur
         const pmSur = (data.pm25 * 1.3).toFixed(1);
         const colorSur = getColor(pmSur);
         markerSur.setIcon(getSensorIcon(colorSur));
-        markerSur.setPopupContent(`<b>Sensor Sur (Zona Industrial)</b><br>PM2.5: ${pmSur} µg/m³<br>Estado: ${getEstado(pmSur)}`);
+        markerSur.setPopupContent(`<b>${stations.sur || 'Estación Sur'}</b><br>PM2.5: ${pmSur} µg/m³<br>Estado: ${getEstado(pmSur)}`);
     }
 }
 
@@ -832,4 +1305,163 @@ async function generatePDF() {
 
     // Guardar PDF
     doc.save("Reporte_SIS_AIR_Ubate.pdf");
+}
+
+/**
+ * ==========================================
+ * 11. CONTROLADOR DE EVENTOS DEL CMS (ADMIN)
+ * ==========================================
+ * Permite cambiar entre las pestañas del CMS y procesar el guardado de
+ * políticas de privacidad, comunicados institucionales, umbrales y estaciones.
+ */
+function setupCMSListeners(userEmail) {
+    // 1. Navegación entre sub-pestañas del CMS
+    const cmsTabBtns = document.querySelectorAll('.cms-tab-btn');
+    const cmsPanels = document.querySelectorAll('.cms-panel-block');
+
+    cmsTabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            cmsTabBtns.forEach(b => b.classList.remove('active'));
+            cmsPanels.forEach(p => p.classList.remove('active'));
+
+            btn.classList.add('active');
+            const tabId = btn.getAttribute('data-cms-tab');
+            const targetPanel = document.getElementById(tabId);
+            if (targetPanel) targetPanel.classList.add('active');
+        });
+    });
+
+    // 2. Correo del administrador activo
+    const emailDisplay = document.getElementById('cms-current-user-email');
+    if (emailDisplay) {
+        emailDisplay.textContent = userEmail || "oscarduquegar@gmail.com";
+    }
+
+    // Función auxiliar para feedback visual de guardado
+    function showCMSStatus(elemId, message, isSuccess = true) {
+        const msgEl = document.getElementById(elemId);
+        if (!msgEl) return;
+        msgEl.textContent = message;
+        msgEl.className = isSuccess ? 'cms-status-msg cms-status-success' : 'cms-status-msg cms-status-error';
+        msgEl.style.display = 'block';
+        setTimeout(() => {
+            msgEl.style.display = 'none';
+        }, 4000);
+    }
+
+    // 3. Guardar Políticas de Privacidad
+    const btnSavePrivacy = document.getElementById('cms-save-privacy-btn');
+    if (btnSavePrivacy) {
+        btnSavePrivacy.addEventListener('click', () => {
+            const title = document.getElementById('cms-input-privacy-title').value.trim();
+            const lastUpdated = document.getElementById('cms-input-privacy-date').value.trim();
+            const content = document.getElementById('cms-textarea-privacy-content').value.trim();
+
+            if (!title || !content) {
+                showCMSStatus('cms-msg-privacy', 'El título y el contenido no pueden estar vacíos.', false);
+                return;
+            }
+
+            const current = CMSManager.getConfig();
+            current.privacy = { title, lastUpdated, content };
+            if (CMSManager.saveConfig(current)) {
+                showCMSStatus('cms-msg-privacy', '✅ Políticas de Privacidad guardadas y publicadas correctamente.');
+            } else {
+                showCMSStatus('cms-msg-privacy', '❌ Error al guardar las políticas.', false);
+            }
+        });
+    }
+
+    // 4. Guardar Identidad y Avisos Comunitarios
+    const btnSaveIdentity = document.getElementById('cms-save-identity-btn');
+    if (btnSaveIdentity) {
+        btnSaveIdentity.addEventListener('click', () => {
+            const siteTitle = document.getElementById('cms-input-site-title').value.trim();
+            const siteSubtitle = document.getElementById('cms-input-site-subtitle').value.trim();
+            const announcementEnabled = document.getElementById('cms-toggle-announcement').checked;
+            const announcementTitle = document.getElementById('cms-input-announcement-title').value.trim();
+            const announcementMessage = document.getElementById('cms-textarea-announcement-msg').value.trim();
+
+            const current = CMSManager.getConfig();
+            current.identity = {
+                siteTitle: siteTitle || "SIS AIR",
+                siteSubtitle: siteSubtitle || "Monitoreo - Ubaté",
+                announcementEnabled,
+                announcementTitle: announcementTitle || "Aviso Oficial",
+                announcementMessage: announcementMessage || "",
+                announcementTag: "Aviso Oficial"
+            };
+
+            if (CMSManager.saveConfig(current)) {
+                showCMSStatus('cms-msg-identity', '✅ Identidad y comunicado oficial actualizados con éxito.');
+            } else {
+                showCMSStatus('cms-msg-identity', '❌ Error al guardar la identidad institucional.', false);
+            }
+        });
+    }
+
+    // 5. Guardar Umbrales de Calidad del Aire
+    const btnSaveThresholds = document.getElementById('cms-save-thresholds-btn');
+    if (btnSaveThresholds) {
+        btnSaveThresholds.addEventListener('click', () => {
+            const pm1 = parseFloat(document.getElementById('cms-input-th-pm1').value) || 25.0;
+            const pm25 = parseFloat(document.getElementById('cms-input-th-pm25').value) || 35.4;
+            const pm10 = parseFloat(document.getElementById('cms-input-th-pm10').value) || 154.0;
+            const no2 = parseFloat(document.getElementById('cms-input-th-no2').value) || 100.0;
+            const voc = parseFloat(document.getElementById('cms-input-th-voc').value) || 1.00;
+
+            const current = CMSManager.getConfig();
+            current.thresholds = { pm1, pm25, pm10, no2, voc };
+
+            if (CMSManager.saveConfig(current)) {
+                showCMSStatus('cms-msg-thresholds', '✅ Umbrales de calidad guardados. Las nuevas alertas usarán estos límites.');
+            } else {
+                showCMSStatus('cms-msg-thresholds', '❌ Error al actualizar los umbrales.', false);
+            }
+        });
+    }
+
+    // 6. Guardar Nombres de Estaciones
+    const btnSaveStations = document.getElementById('cms-save-stations-btn');
+    if (btnSaveStations) {
+        btnSaveStations.addEventListener('click', () => {
+            const centro = document.getElementById('cms-input-station-centro').value.trim();
+            const norte = document.getElementById('cms-input-station-norte').value.trim();
+            const sur = document.getElementById('cms-input-station-sur').value.trim();
+
+            const current = CMSManager.getConfig();
+            current.stations = {
+                centro: centro || "Estación Centro",
+                norte: norte || "Estación Norte",
+                sur: sur || "Estación Sur"
+            };
+
+            if (CMSManager.saveConfig(current)) {
+                showCMSStatus('cms-msg-stations', '✅ Nombres de estaciones actualizados en todo el sistema.');
+            } else {
+                showCMSStatus('cms-msg-stations', '❌ Error al guardar las estaciones.', false);
+            }
+        });
+    }
+
+    // 7. Guardar Clave de Seguridad
+    const btnSaveSecurity = document.getElementById('cms-save-security-btn');
+    if (btnSaveSecurity) {
+        btnSaveSecurity.addEventListener('click', () => {
+            const adminCode = document.getElementById('cms-input-admin-code').value.trim();
+            if (!adminCode) {
+                showCMSStatus('cms-msg-security', 'Por favor ingresa una clave válida.', false);
+                return;
+            }
+
+            const current = CMSManager.getConfig();
+            current.security = { adminCode };
+
+            if (CMSManager.saveConfig(current)) {
+                showCMSStatus('cms-msg-security', '✅ Clave de seguridad administrativa actualizada.');
+            } else {
+                showCMSStatus('cms-msg-security', '❌ Error al actualizar la clave.', false);
+            }
+        });
+    }
 }

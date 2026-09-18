@@ -5,8 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard SIS AIR - Ubaté</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -20,28 +22,48 @@
       ============================================
       CABECERA (HEADER) Y NAVEGACIÓN
       ============================================
-      Contiene el logo, los botones para cambiar de pestaña y las notificaciones.
     -->
     <header>
         <div class="header-left">
-            <img src="assets/logo.PNG" alt="SIS AIR" class="header-logo" onerror="this.style.display='none'">
+            <div class="logo-wrapper">
+                <img src="assets/logo.PNG" alt="SIS AIR" class="header-logo" onerror="this.style.display='none'">
+            </div>
             <div class="header-titles">
-                <div class="logo-text">SIS AIR</div>
-                <h1>Monitoreo - Ubaté</h1>
+                <div class="brand-row">
+                    <span class="logo-text" id="header-system-title">SIS AIR</span>
+                    <span class="live-pill"><span class="pulse-dot"></span> EN VIVO</span>
+                </div>
+                <h1 id="header-system-subtitle">Monitoreo Ambiental • Ubaté</h1>
             </div>
         </div>
         <div class="header-center">
             <nav class="main-nav">
-                <button class="nav-btn active" data-target="view-dashboard">Dashboard</button>
-                <button class="nav-btn" data-target="view-alertas">Alertas</button>
-                <button class="nav-btn" data-target="view-historial">Historial Completo</button>
-                <button class="nav-btn" data-target="view-mapa">Mapa de Sensores</button>
+                <button class="nav-btn active" data-target="view-dashboard">📊 Dashboard</button>
+                <button class="nav-btn" data-target="view-alertas">⚠️ Alertas</button>
+                <button class="nav-btn" data-target="view-historial">📋 Historial</button>
+                <button class="nav-btn" data-target="view-mapa">🗺️ Mapa</button>
+                <button class="nav-btn" data-target="view-politicas">📜 Políticas</button>
+                <button class="nav-btn nav-btn-admin" id="nav-cms-btn" data-target="view-cms" style="display: none;">⚙️ Panel CMS</button>
             </nav>
         </div>
         <div class="header-right">
+            <!-- Widget de Perfil y Rol del Usuario -->
+            <div class="user-profile-widget" id="user-profile-widget">
+                <div class="user-avatar-circle" id="user-avatar-circle">U</div>
+                <div class="user-profile-info">
+                    <span class="user-profile-name" id="user-display-name">Usuario</span>
+                    <span class="badge-role badge-admin" id="user-role-badge" style="display: none;">👑 Administrador</span>
+                </div>
+            </div>
+
+            <!-- Botón de Alternancia Modo Oscuro / Modo Claro -->
+            <button id="theme-toggle-btn" class="theme-toggle-btn" title="Cambiar a Modo Oscuro / Modo Claro" aria-label="Cambiar tema">
+                <span id="theme-toggle-icon">🌙</span>
+            </button>
+
             <div class="notifications-wrapper">
-                <button id="alerts-btn" class="btn-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <button id="alerts-btn" class="btn-icon" title="Notificaciones de Calidad de Aire">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
                         <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
                     </svg>
@@ -54,89 +76,197 @@
                     </ul>
                 </div>
             </div>
-            <button id="logout-btn" class="btn-secondary">Cerrar Sesión</button>
+            <button id="logout-btn" class="btn-secondary btn-logout">Cerrar Sesión</button>
         </div>
     </header>
 
-    <main class="dashboard-container">
-        
     <main class="dashboard-container">
         
         <!-- 
           ============================================
           VISTA 1: DASHBOARD PRINCIPAL
           ============================================
-          Muestra las tarjetas con los valores actuales en tiempo real 
-          y las gráficas de evolución.
         -->
         <div id="view-dashboard" class="view-section active">
-            <!-- Tarjetas -->
+            
+            <!-- BANNER DE COMUNICADOS / ANUNCIOS OFICIALES (Configurable por CMS) -->
+            <div id="announcement-banner" class="announcement-banner" style="display: none;">
+                <div class="announcement-content">
+                    <div class="announcement-icon">📢</div>
+                    <div class="announcement-text">
+                        <h4 id="announcement-title">Aviso Oficial de la Administración</h4>
+                        <p id="announcement-message">Sistema de monitoreo preventivo activo.</p>
+                    </div>
+                </div>
+                <span class="announcement-tag" id="announcement-tag">Aviso Institucional</span>
+            </div>
+
+            <!-- Tarjetas de Telemetría Ambiental -->
             <section class="metrics-grid">
-            <div class="card" id="card-pm1" data-type="pm1">
-                <h2>PM1</h2>
-                <div class="value" id="pm1-value">--</div>
-                <div class="unit">µg/m³</div>
-                <div class="status" id="pm1-status">Calculando...</div>
-            </div>
-            <div class="card" id="card-pm25" data-type="pm25">
-                <h2>PM2.5</h2>
-                <div class="value" id="pm25-value">--</div>
-                <div class="unit">µg/m³</div>
-                <div class="status" id="pm25-status">Calculando...</div>
-            </div>
-            <div class="card" id="card-pm10" data-type="pm10">
-                <h2>PM10</h2>
-                <div class="value" id="pm10-value">--</div>
-                <div class="unit">µg/m³</div>
-                <div class="status" id="pm10-status">Calculando...</div>
-            </div>
+                <div class="card" id="card-pm1" data-type="pm1">
+                    <div class="card-top-accent"></div>
+                    <div class="card-header">
+                        <span class="metric-tag">PM1</span>
+                        <span class="card-live-dot" title="Telemetría en vivo"></span>
+                    </div>
+                    <div class="metric-body">
+                        <div class="value" id="pm1-value">--</div>
+                        <div class="unit">µg/m³</div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="status" id="pm1-status">Calculando...</span>
+                    </div>
+                </div>
 
-            <div class="card" id="card-no2" data-type="no2">
-                <h2>NO2</h2>
-                <div class="value" id="no2-value">--</div>
-                <div class="unit">µg/m³</div>
-                <div class="status" id="no2-status">Calculando...</div>
-            </div>
-            <div class="card" id="card-voc" data-type="voc">
-                <h2>VOC</h2>
-                <div class="value" id="voc-value">--</div>
-                <div class="unit">ppm</div>
-                <div class="status" id="voc-status">Calculando...</div>
-            </div>
-            <div class="card" id="card-temp" data-type="temp">
-                <h2>Temperatura</h2>
-                <div class="value" id="temp-value">--</div>
-                <div class="unit">°C</div>
-                <div class="status">Normal</div>
-            </div>
-            <div class="card" id="card-humedad" data-type="humedad">
-                <h2>Humedad</h2>
-                <div class="value" id="humedad-value">--</div>
-                <div class="unit">%</div>
-                <div class="status">Normal</div>
-            </div>
-            <div class="card" id="card-presion" data-type="presion">
-                <h2>Presión</h2>
-                <div class="value" id="presion-value">--</div>
-                <div class="unit">hPa</div>
-                <div class="status">Normal</div>
-            </div>
-        </section>
+                <div class="card" id="card-pm25" data-type="pm25">
+                    <div class="card-top-accent"></div>
+                    <div class="card-header">
+                        <span class="metric-tag highlight">PM2.5</span>
+                        <span class="card-live-dot" title="Telemetría en vivo"></span>
+                    </div>
+                    <div class="metric-body">
+                        <div class="value" id="pm25-value">--</div>
+                        <div class="unit">µg/m³</div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="status" id="pm25-status">Calculando...</span>
+                    </div>
+                </div>
 
-        <!-- Varias gráficas separadas -->
-        <section class="charts-section">
-            <div class="charts-grid">
-                <div class="chart-container">
-                    <canvas id="particulasChart"></canvas>
+                <div class="card" id="card-pm10" data-type="pm10">
+                    <div class="card-top-accent"></div>
+                    <div class="card-header">
+                        <span class="metric-tag">PM10</span>
+                        <span class="card-live-dot" title="Telemetría en vivo"></span>
+                    </div>
+                    <div class="metric-body">
+                        <div class="value" id="pm10-value">--</div>
+                        <div class="unit">µg/m³</div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="status" id="pm10-status">Calculando...</span>
+                    </div>
                 </div>
-                <div class="chart-container">
-                    <canvas id="gasesChart"></canvas>
+
+                <div class="card" id="card-no2" data-type="no2">
+                    <div class="card-top-accent"></div>
+                    <div class="card-header">
+                        <span class="metric-tag">NO₂</span>
+                        <span class="card-live-dot" title="Telemetría en vivo"></span>
+                    </div>
+                    <div class="metric-body">
+                        <div class="value" id="no2-value">--</div>
+                        <div class="unit">µg/m³</div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="status" id="no2-status">Calculando...</span>
+                    </div>
                 </div>
-                <div class="chart-container">
-                    <canvas id="climaChart"></canvas>
+
+                <div class="card" id="card-voc" data-type="voc">
+                    <div class="card-top-accent"></div>
+                    <div class="card-header">
+                        <span class="metric-tag">VOC</span>
+                        <span class="card-live-dot" title="Telemetría en vivo"></span>
+                    </div>
+                    <div class="metric-body">
+                        <div class="value" id="voc-value">--</div>
+                        <div class="unit">ppm</div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="status" id="voc-status">Calculando...</span>
+                    </div>
                 </div>
-            </div>
-        </section>
+
+                <div class="card card-weather" id="card-temp" data-type="temp">
+                    <div class="card-top-accent"></div>
+                    <div class="card-header">
+                        <span class="metric-tag weather">Temperatura</span>
+                        <span class="weather-icon">🌡️</span>
+                    </div>
+                    <div class="metric-body">
+                        <div class="value" id="temp-value">--</div>
+                        <div class="unit">°C</div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="status aqi-pill-normal">Ambiente</span>
+                    </div>
+                </div>
+
+                <div class="card card-weather" id="card-humedad" data-type="humedad">
+                    <div class="card-top-accent"></div>
+                    <div class="card-header">
+                        <span class="metric-tag weather">Humedad</span>
+                        <span class="weather-icon">💧</span>
+                    </div>
+                    <div class="metric-body">
+                        <div class="value" id="humedad-value">--</div>
+                        <div class="unit">%</div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="status aqi-pill-normal">Relativa</span>
+                    </div>
+                </div>
+
+                <div class="card card-weather" id="card-presion" data-type="presion">
+                    <div class="card-top-accent"></div>
+                    <div class="card-header">
+                        <span class="metric-tag weather">Presión</span>
+                        <span class="weather-icon">🧭</span>
+                    </div>
+                    <div class="metric-body">
+                        <div class="value" id="presion-value">--</div>
+                        <div class="unit">hPa</div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="status aqi-pill-normal">Barométrica</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección de Gráficas en Tiempo Real -->
+            <section class="charts-section">
+                <div class="charts-header">
+                    <div>
+                        <h2>📊 Tendencia y Evolución en Tiempo Real</h2>
+                        <p style="color: #64748b; font-size: 0.9rem; margin-top: 0.2rem;">Actualización constante en intervalos de 10 segundos</p>
+                    </div>
+                    <div class="chart-legend-pills">
+                        <span class="legend-badge badge-pm">Material Particulado</span>
+                        <span class="legend-badge badge-gases">Gases Químicos</span>
+                        <span class="legend-badge badge-clima">Meteorología</span>
+                    </div>
+                </div>
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-title-bar">
+                            <h3>Partículas en el Aire</h3>
+                            <span class="chart-chip">PM1 • PM2.5 • PM10</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="particulasChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-title-bar">
+                            <h3>Gases Contaminantes</h3>
+                            <span class="chart-chip">NO₂ • VOC</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="gasesChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-title-bar">
+                            <h3>Variables Climáticas</h3>
+                            <span class="chart-chip">Temp • Humedad</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="climaChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
         <section class="action-section">
             <div class="action-buttons">
@@ -222,6 +352,236 @@
             </div>
         </div>
         <!-- FIN VISTA MAPA -->
+
+        <!-- 
+          ============================================
+          VISTA 5: POLÍTICAS DE PRIVACIDAD
+          ============================================
+          Consulta pública de la política de protección de datos (Ley 1581)
+        -->
+        <div id="view-politicas" class="view-section" style="display: none;">
+            <div class="privacy-container">
+                <div class="privacy-header">
+                    <div>
+                        <h2 id="privacy-display-title">Políticas de Privacidad y Tratamiento de Datos</h2>
+                        <div class="privacy-meta" id="privacy-display-meta">
+                            Vigencia actual: <span id="privacy-display-date">18 de Septiembre de 2026</span> | Ley 1581 de 2012 (Colombia)
+                        </div>
+                    </div>
+                    <button id="btn-print-privacy" class="btn-secondary" style="color: var(--primary-blue); border-color: var(--primary-blue);">🖨️ Imprimir / Guardar</button>
+                </div>
+                <div class="privacy-body" id="privacy-display-content">
+                    <!-- Se renderiza desde CMSManager -->
+                </div>
+            </div>
+        </div>
+        <!-- FIN VISTA POLÍTICAS -->
+
+        <!-- 
+          ============================================
+          VISTA 6: PANEL DE ADMINISTRACIÓN CMS (Exclusivo Admin)
+          ============================================
+          Permite configurar políticas, identidad, avisos y umbrales
+        -->
+        <div id="view-cms" class="view-section" style="display: none;">
+            <div class="cms-wrapper">
+                <!-- SIDEBAR CMS -->
+                <aside class="cms-sidebar">
+                    <div class="cms-sidebar-header">
+                        <h3>⚙️ Panel CMS</h3>
+                        <p>Gestor de Contenidos y Configuración</p>
+                    </div>
+                    <button class="cms-tab-btn active" data-cms-tab="cms-politicas">
+                        <span class="tab-icon">📜</span> Políticas de Privacidad
+                    </button>
+                    <button class="cms-tab-btn" data-cms-tab="cms-identidad">
+                        <span class="tab-icon">🏛️</span> Identidad y Avisos
+                    </button>
+                    <button class="cms-tab-btn" data-cms-tab="cms-umbrales">
+                        <span class="tab-icon">⚠️</span> Umbrales de Calidad
+                    </button>
+                    <button class="cms-tab-btn" data-cms-tab="cms-estaciones">
+                        <span class="tab-icon">📡</span> Estaciones de Monitoreo
+                    </button>
+                    <button class="cms-tab-btn" data-cms-tab="cms-seguridad">
+                        <span class="tab-icon">🛡️</span> Roles y Seguridad
+                    </button>
+                </aside>
+
+                <!-- CONTENIDO MODULAR CMS -->
+                <div class="cms-content">
+                    
+                    <!-- 1. MÓDULO POLÍTICAS DE PRIVACIDAD -->
+                    <div id="cms-politicas" class="cms-panel-block active">
+                        <div class="cms-card-header">
+                            <div>
+                                <h3>Configuración de Políticas de Privacidad</h3>
+                                <p>Edita el contenido legal oficial que los usuarios consultan al registrarse y en el portal.</p>
+                            </div>
+                        </div>
+                        <div class="cms-form-group">
+                            <label for="cms-input-privacy-title">Título del Documento Legal</label>
+                            <input type="text" id="cms-input-privacy-title" class="cms-input">
+                        </div>
+                        <div class="cms-form-group">
+                            <label for="cms-input-privacy-date">Fecha de Vigencia / Última Actualización</label>
+                            <input type="text" id="cms-input-privacy-date" class="cms-input">
+                        </div>
+                        <div class="cms-form-group">
+                            <label for="cms-textarea-privacy-content">Texto Oficial de la Política (Formato Cláusulas / Párrafos)</label>
+                            <textarea id="cms-textarea-privacy-content" class="cms-textarea cms-textarea-large"></textarea>
+                            <span class="help-text">Separa los párrafos o artículos con saltos de línea dobles para estructurarlos limpiamente.</span>
+                        </div>
+                        <div class="cms-actions">
+                            <button type="button" class="btn-primary" id="cms-save-privacy-btn">💾 Guardar Políticas de Privacidad</button>
+                        </div>
+                        <div id="cms-msg-privacy" class="cms-status-msg"></div>
+                    </div>
+
+                    <!-- 2. MÓDULO IDENTIDAD Y AVISOS -->
+                    <div id="cms-identidad" class="cms-panel-block">
+                        <div class="cms-card-header">
+                            <div>
+                                <h3>Identidad Institucional y Avisos Comunitarios</h3>
+                                <p>Configura los textos del portal y comunicados oficiales en tiempo real.</p>
+                            </div>
+                        </div>
+                        <div class="cms-form-grid">
+                            <div class="cms-form-group">
+                                <label for="cms-input-site-title">Nombre del Sistema</label>
+                                <input type="text" id="cms-input-site-title" class="cms-input">
+                            </div>
+                            <div class="cms-form-group">
+                                <label for="cms-input-site-subtitle">Subtítulo / Municipio</label>
+                                <input type="text" id="cms-input-site-subtitle" class="cms-input">
+                            </div>
+                        </div>
+                        <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 1.5rem 0;">
+                        <h4 style="color: var(--primary-blue); margin-bottom: 0.5rem;">📢 Banner de Avisos Oficiales a la Comunidad</h4>
+                        <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1rem;">Muestra un comunicado destacado en la parte superior del dashboard a todos los usuarios.</p>
+                        
+                        <div class="cms-form-group">
+                            <label class="cms-toggle-label">
+                                <span class="cms-toggle-switch">
+                                    <input type="checkbox" id="cms-toggle-announcement">
+                                    <span class="cms-slider"></span>
+                                </span>
+                                <span>Activar banner de aviso a la comunidad</span>
+                            </label>
+                        </div>
+                        <div class="cms-form-group">
+                            <label for="cms-input-announcement-title">Título del Comunicado</label>
+                            <input type="text" id="cms-input-announcement-title" class="cms-input" placeholder="Ej: Recomendación Preventiva">
+                        </div>
+                        <div class="cms-form-group">
+                            <label for="cms-textarea-announcement-msg">Mensaje / Recomendaciones</label>
+                            <textarea id="cms-textarea-announcement-msg" class="cms-textarea" placeholder="Ej: Se recomienda a la comunidad de Ubaté..."></textarea>
+                        </div>
+                        <div class="cms-actions">
+                            <button type="button" class="btn-primary" id="cms-save-identity-btn">💾 Guardar Identidad y Avisos</button>
+                        </div>
+                        <div id="cms-msg-identity" class="cms-status-msg"></div>
+                    </div>
+
+                    <!-- 3. MÓDULO UMBRALES DE CALIDAD DEL AIRE -->
+                    <div id="cms-umbrales" class="cms-panel-block">
+                        <div class="cms-card-header">
+                            <div>
+                                <h3>Umbrales y Límites de Alerta Automática</h3>
+                                <p>Configura los valores límite a partir de los cuales el sistema genera alertas automáticas.</p>
+                            </div>
+                        </div>
+                        <div class="cms-form-grid">
+                            <div class="cms-form-group">
+                                <label for="cms-input-th-pm1">Límite Alerta PM1 (µg/m³)</label>
+                                <input type="number" step="0.1" id="cms-input-th-pm1" class="cms-input">
+                                <span class="help-text">Estándar: 25.0 µg/m³</span>
+                            </div>
+                            <div class="cms-form-group">
+                                <label for="cms-input-th-pm25">Límite Alerta PM2.5 (µg/m³)</label>
+                                <input type="number" step="0.1" id="cms-input-th-pm25" class="cms-input">
+                                <span class="help-text">Norma OMS: 35.4 µg/m³</span>
+                            </div>
+                            <div class="cms-form-group">
+                                <label for="cms-input-th-pm10">Límite Alerta PM10 (µg/m³)</label>
+                                <input type="number" step="0.1" id="cms-input-th-pm10" class="cms-input">
+                                <span class="help-text">Estándar: 154.0 µg/m³</span>
+                            </div>
+                            <div class="cms-form-group">
+                                <label for="cms-input-th-no2">Límite Alerta NO2 (µg/m³)</label>
+                                <input type="number" step="0.1" id="cms-input-th-no2" class="cms-input">
+                                <span class="help-text">Estándar: 100.0 µg/m³</span>
+                            </div>
+                            <div class="cms-form-group">
+                                <label for="cms-input-th-voc">Límite Alerta VOC (ppm)</label>
+                                <input type="number" step="0.01" id="cms-input-th-voc" class="cms-input">
+                                <span class="help-text">Estándar: 1.00 ppm</span>
+                            </div>
+                        </div>
+                        <div class="cms-actions">
+                            <button type="button" class="btn-primary" id="cms-save-thresholds-btn">💾 Guardar Umbrales de Calidad</button>
+                        </div>
+                        <div id="cms-msg-thresholds" class="cms-status-msg"></div>
+                    </div>
+
+                    <!-- 4. MÓDULO ESTACIONES DE MAPA -->
+                    <div id="cms-estaciones" class="cms-panel-block">
+                        <div class="cms-card-header">
+                            <div>
+                                <h3>Configuración de Estaciones de Monitoreo</h3>
+                                <p>Personaliza los nombres de las estaciones de Ubaté visualizadas en el mapa interactivo.</p>
+                            </div>
+                        </div>
+                        <div class="cms-form-grid">
+                            <div class="cms-form-group">
+                                <label for="cms-input-station-centro">Nombre Estación Centro</label>
+                                <input type="text" id="cms-input-station-centro" class="cms-input">
+                            </div>
+                            <div class="cms-form-group">
+                                <label for="cms-input-station-norte">Nombre Estación Norte</label>
+                                <input type="text" id="cms-input-station-norte" class="cms-input">
+                            </div>
+                            <div class="cms-form-group">
+                                <label for="cms-input-station-sur">Nombre Estación Sur</label>
+                                <input type="text" id="cms-input-station-sur" class="cms-input">
+                            </div>
+                        </div>
+                        <div class="cms-actions">
+                            <button type="button" class="btn-primary" id="cms-save-stations-btn">💾 Guardar Nombres de Estaciones</button>
+                        </div>
+                        <div id="cms-msg-stations" class="cms-status-msg"></div>
+                    </div>
+
+                    <!-- 5. MÓDULO ROLES Y SEGURIDAD -->
+                    <div id="cms-seguridad" class="cms-panel-block">
+                        <div class="cms-card-header">
+                            <div>
+                                <h3>Gestión de Roles y Permisos de Administrador</h3>
+                                <p>Información del usuario actual y control de privilegios del sistema.</p>
+                            </div>
+                        </div>
+                        <div class="card" style="background: #f8fafc; border: 1px solid #e2e8f0; margin-bottom: 1.5rem; text-align: left;">
+                            <h4 style="color: var(--primary-blue); margin-bottom: 0.5rem;">Tu Perfil de Acceso</h4>
+                            <p style="margin-bottom: 0.35rem;"><strong>Correo:</strong> <span id="cms-current-user-email">--</span></p>
+                            <p style="margin-bottom: 0.35rem;"><strong>Nivel de Acceso:</strong> <span class="badge-role badge-admin">Administrador del Sistema</span></p>
+                            <p style="margin-top: 0.5rem; font-size: 0.85rem; color: #64748b;">Tienes privilegios absolutos para editar configuraciones CMS, políticas, umbrales y supervisar el sistema.</p>
+                        </div>
+
+                        <div class="cms-form-group">
+                            <label for="cms-input-admin-code">Clave de Seguridad Administrativa</label>
+                            <input type="password" id="cms-input-admin-code" class="cms-input" placeholder="Clave para autorización de funciones avanzadas">
+                            <span class="help-text">Código de control administrativo interno de SIS AIR.</span>
+                        </div>
+                        <div class="cms-actions">
+                            <button type="button" class="btn-primary" id="cms-save-security-btn">💾 Actualizar Clave Maestra</button>
+                        </div>
+                        <div id="cms-msg-security" class="cms-status-msg"></div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- FIN VISTA CMS -->
 
     </main>
 
