@@ -7,7 +7,7 @@
     <title>Dashboard SIS AIR - Ubaté</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -38,12 +38,13 @@
         </div>
         <div class="header-center">
             <nav class="main-nav">
-                <button class="nav-btn active" data-target="view-dashboard">📊 Dashboard</button>
-                <button class="nav-btn" data-target="view-alertas">⚠️ Alertas</button>
-                <button class="nav-btn" data-target="view-historial">📋 Historial</button>
-                <button class="nav-btn" data-target="view-mapa">🗺️ Mapa</button>
-                <button class="nav-btn" data-target="view-politicas">📜 Políticas</button>
-                <button class="nav-btn nav-btn-admin" id="nav-cms-btn" data-target="view-cms" style="display: none;">⚙️ Panel CMS</button>
+                <button class="nav-btn active" data-target="view-dashboard">Dashboard</button>
+                <button class="nav-btn" data-target="view-alertas">Alertas</button>
+                <button class="nav-btn" data-target="view-historial">Historial</button>
+                <button class="nav-btn" data-target="view-mapa">Mapa</button>
+                <button class="nav-btn" data-target="view-politicas">Políticas</button>
+                <button class="nav-btn" data-target="view-stakeholders">Validación UAT</button>
+                <button class="nav-btn nav-btn-admin" id="nav-cms-btn" data-target="view-cms" style="display: none;">Panel CMS</button>
             </nav>
         </div>
         <div class="header-right">
@@ -52,13 +53,13 @@
                 <div class="user-avatar-circle" id="user-avatar-circle">U</div>
                 <div class="user-profile-info">
                     <span class="user-profile-name" id="user-display-name">Usuario</span>
-                    <span class="badge-role badge-admin" id="user-role-badge" style="display: none;">👑 Administrador</span>
+                    <span class="badge-role badge-admin" id="user-role-badge" style="display: none;">Administrador</span>
                 </div>
             </div>
 
             <!-- Botón de Alternancia Modo Oscuro / Modo Claro -->
             <button id="theme-toggle-btn" class="theme-toggle-btn" title="Cambiar a Modo Oscuro / Modo Claro" aria-label="Cambiar tema">
-                <span id="theme-toggle-icon">🌙</span>
+                <span id="theme-toggle-icon"></span>
             </button>
 
             <div class="notifications-wrapper">
@@ -92,7 +93,13 @@
             <!-- BANNER DE COMUNICADOS / ANUNCIOS OFICIALES (Configurable por CMS) -->
             <div id="announcement-banner" class="announcement-banner" style="display: none;">
                 <div class="announcement-content">
-                    <div class="announcement-icon">📢</div>
+                    <div class="announcement-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                    </div>
                     <div class="announcement-text">
                         <h4 id="announcement-title">Aviso Oficial de la Administración</h4>
                         <p id="announcement-message">Sistema de monitoreo preventivo activo.</p>
@@ -101,125 +108,141 @@
                 <span class="announcement-tag" id="announcement-tag">Aviso Institucional</span>
             </div>
 
+            <!-- PANEL DESTACADO: ICA OFICIAL (RESOLUCIÓN 2254 DE 2017) Y SALUD DE NODOS IoT -->
+            <section class="ica-health-overview-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem;">
+                <!-- Tarjeta ICA Oficial -->
+                <div class="card ica-highlight-card" style="border-left: 5px solid #10b981; position: relative; overflow: hidden;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em; color: var(--primary-teal);">Índice Oficial de Calidad del Aire (ICA)</span>
+                            <h3 style="margin-top: 0.25rem; font-size: 1.15rem; color: var(--text-primary);">Resolución 2254 de 2017 • MinAmbiente</h3>
+                        </div>
+                        <span id="ica-badge" class="badge-role" style="background: #10b98120; color: #10b981; border: 1px solid #10b98150; font-size: 0.85rem; padding: 0.35rem 0.75rem;">Calculando...</span>
+                    </div>
+                    <div style="display: flex; align-items: baseline; gap: 1rem; margin-top: 0.75rem;">
+                        <span id="ica-value" style="font-size: 2.75rem; font-weight: 800; color: var(--text-primary); line-height: 1;">--</span>
+                        <div>
+                            <span style="font-size: 0.85rem; color: var(--text-muted); display: block;">Escala 0 - 500 ICA</span>
+                            <span style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 600;">Contaminante Crítico: <strong id="ica-critic-pollutant" style="color: var(--primary-blue);">--</strong></span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 0.75rem; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--surface-border); padding-top: 0.5rem; display: flex; justify-content: space-between;">
+                        <span>Interpolación por Breakpoints MADS</span>
+                        <span>Ubaté (2550 msnm)</span>
+                    </div>
+                </div>
+
+                <!-- Tarjeta Salud de Nodos IoT -->
+                <div class="card iot-health-card" style="border-left: 5px solid #0284c7;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <div>
+                            <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em; color: var(--accent-cyan);">Red de Monitoreo IoT</span>
+                            <h3 style="font-size: 1.05rem; color: var(--text-primary); margin-top: 0.15rem;">Estado y Conectividad de Nodos</h3>
+                        </div>
+                        <span class="live-pill" style="font-size: 0.75rem;"><span class="pulse-dot"></span> RED ACTIVA</span>
+                    </div>
+                    <div class="nodes-status-list" style="display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.85rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.35rem 0.5rem; background: var(--bg-color); border-radius: 6px;">
+                            <span><strong id="node-name-centro">Estación Centro</strong></span>
+                            <span id="node-status-centro" style="color: #10b981; font-weight: 600;">● Online (<span id="node-lat-centro">42ms</span>)</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.35rem 0.5rem; background: var(--bg-color); border-radius: 6px;">
+                            <span><strong id="node-name-norte">Estación Norte</strong></span>
+                            <span id="node-status-norte" style="color: #10b981; font-weight: 600;">● Online (<span id="node-lat-norte">58ms</span>)</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.35rem 0.5rem; background: var(--bg-color); border-radius: 6px;">
+                            <span><strong id="node-name-sur">Estación Sur</strong></span>
+                            <span id="node-status-sur" style="color: #10b981; font-weight: 600;">● Online (<span id="node-lat-sur">35ms</span>)</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- Tarjetas de Telemetría Ambiental -->
+            <!-- Tarjetas de Telemetría Ambiental (8 Parámetros - Formato Industrial Grafana) -->
             <section class="metrics-grid">
                 <div class="card" id="card-pm1" data-type="pm1">
-                    <div class="card-top-accent"></div>
                     <div class="card-header">
                         <span class="metric-tag">PM1</span>
-                        <span class="card-live-dot" title="Telemetría en vivo"></span>
+                        <span class="status aqi-pill" id="pm1-status">Calculando...</span>
                     </div>
                     <div class="metric-body">
-                        <div class="value" id="pm1-value">--</div>
-                        <div class="unit">µg/m³</div>
-                    </div>
-                    <div class="card-footer">
-                        <span class="status" id="pm1-status">Calculando...</span>
+                        <span class="value" id="pm1-value">--</span>
+                        <span class="unit">µg/m³</span>
                     </div>
                 </div>
 
                 <div class="card" id="card-pm25" data-type="pm25">
-                    <div class="card-top-accent"></div>
                     <div class="card-header">
                         <span class="metric-tag highlight">PM2.5</span>
-                        <span class="card-live-dot" title="Telemetría en vivo"></span>
+                        <span class="status aqi-pill" id="pm25-status">Calculando...</span>
                     </div>
                     <div class="metric-body">
-                        <div class="value" id="pm25-value">--</div>
-                        <div class="unit">µg/m³</div>
-                    </div>
-                    <div class="card-footer">
-                        <span class="status" id="pm25-status">Calculando...</span>
+                        <span class="value" id="pm25-value">--</span>
+                        <span class="unit">µg/m³</span>
                     </div>
                 </div>
 
                 <div class="card" id="card-pm10" data-type="pm10">
-                    <div class="card-top-accent"></div>
                     <div class="card-header">
                         <span class="metric-tag">PM10</span>
-                        <span class="card-live-dot" title="Telemetría en vivo"></span>
+                        <span class="status aqi-pill" id="pm10-status">Calculando...</span>
                     </div>
                     <div class="metric-body">
-                        <div class="value" id="pm10-value">--</div>
-                        <div class="unit">µg/m³</div>
-                    </div>
-                    <div class="card-footer">
-                        <span class="status" id="pm10-status">Calculando...</span>
+                        <span class="value" id="pm10-value">--</span>
+                        <span class="unit">µg/m³</span>
                     </div>
                 </div>
 
                 <div class="card" id="card-no2" data-type="no2">
-                    <div class="card-top-accent"></div>
                     <div class="card-header">
                         <span class="metric-tag">NO₂</span>
-                        <span class="card-live-dot" title="Telemetría en vivo"></span>
+                        <span class="status aqi-pill" id="no2-status">Calculando...</span>
                     </div>
                     <div class="metric-body">
-                        <div class="value" id="no2-value">--</div>
-                        <div class="unit">µg/m³</div>
-                    </div>
-                    <div class="card-footer">
-                        <span class="status" id="no2-status">Calculando...</span>
+                        <span class="value" id="no2-value">--</span>
+                        <span class="unit">µg/m³</span>
                     </div>
                 </div>
 
                 <div class="card" id="card-voc" data-type="voc">
-                    <div class="card-top-accent"></div>
                     <div class="card-header">
                         <span class="metric-tag">VOC</span>
-                        <span class="card-live-dot" title="Telemetría en vivo"></span>
+                        <span class="status aqi-pill" id="voc-status">Calculando...</span>
                     </div>
                     <div class="metric-body">
-                        <div class="value" id="voc-value">--</div>
-                        <div class="unit">ppm</div>
-                    </div>
-                    <div class="card-footer">
-                        <span class="status" id="voc-status">Calculando...</span>
+                        <span class="value" id="voc-value">--</span>
+                        <span class="unit">ppm</span>
                     </div>
                 </div>
 
                 <div class="card card-weather" id="card-temp" data-type="temp">
-                    <div class="card-top-accent"></div>
                     <div class="card-header">
                         <span class="metric-tag weather">Temperatura</span>
-                        <span class="weather-icon">🌡️</span>
                     </div>
                     <div class="metric-body">
-                        <div class="value" id="temp-value">--</div>
-                        <div class="unit">°C</div>
-                    </div>
-                    <div class="card-footer">
-                        <span class="status aqi-pill-normal">Ambiente</span>
+                        <span class="value" id="temp-value">--</span>
+                        <span class="unit">°C</span>
                     </div>
                 </div>
 
                 <div class="card card-weather" id="card-humedad" data-type="humedad">
-                    <div class="card-top-accent"></div>
                     <div class="card-header">
                         <span class="metric-tag weather">Humedad</span>
-                        <span class="weather-icon">💧</span>
                     </div>
                     <div class="metric-body">
-                        <div class="value" id="humedad-value">--</div>
-                        <div class="unit">%</div>
-                    </div>
-                    <div class="card-footer">
-                        <span class="status aqi-pill-normal">Relativa</span>
+                        <span class="value" id="humedad-value">--</span>
+                        <span class="unit">%</span>
                     </div>
                 </div>
 
                 <div class="card card-weather" id="card-presion" data-type="presion">
-                    <div class="card-top-accent"></div>
                     <div class="card-header">
                         <span class="metric-tag weather">Presión</span>
-                        <span class="weather-icon">🧭</span>
                     </div>
                     <div class="metric-body">
-                        <div class="value" id="presion-value">--</div>
-                        <div class="unit">hPa</div>
-                    </div>
-                    <div class="card-footer">
-                        <span class="status aqi-pill-normal">Barométrica</span>
+                        <span class="value" id="presion-value">--</span>
+                        <span class="unit">hPa</span>
                     </div>
                 </div>
             </section>
@@ -228,7 +251,7 @@
             <section class="charts-section">
                 <div class="charts-header">
                     <div>
-                        <h2>📊 Tendencia y Evolución en Tiempo Real</h2>
+                        <h2>Tendencia y Evolución en Tiempo Real</h2>
                         <p style="color: #64748b; font-size: 0.9rem; margin-top: 0.2rem;">Actualización constante en intervalos de 10 segundos</p>
                     </div>
                     <div class="chart-legend-pills">
@@ -268,11 +291,82 @@
                 </div>
             </section>
 
-        <section class="action-section">
-            <div class="action-buttons">
-                <button id="btn-purificacion" class="btn-primary btn-large">Generar Plan de Purificación</button>
-                <button id="btn-pdf" class="btn-primary btn-large">📄 Descargar Reporte PDF</button>
+        <!-- MÓDULO DEL TERMO PURIFICADOR / HARDWARE IoT (Estilo Actuador IQAir AirVisual & Panel Grafana) -->
+        <section class="purifier-instrument-panel card" id="purifier-hardware-panel">
+            <div class="panel-header-row">
+                <div class="panel-title-group">
+                    <div class="device-icon-box">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="device-label-meta">ACTUADOR IoT • FILTRO HEPA H13 ACTIVO</div>
+                        <h2 class="device-title">Termo Purificador SIS AIR</h2>
+                    </div>
+                </div>
+                <div class="device-status-badge" id="purifier-status-badge">
+                    <span class="device-indicator-dot"></span>
+                    <span id="purifier-status-text">EN OPERACIÓN</span>
+                </div>
             </div>
+
+            <div class="instrumental-grid">
+                <!-- Control 1: Toggle Switch Táctico -->
+                <div class="instrument-box">
+                    <span class="instrument-sub">Estado del Actuador</span>
+                    <div class="toggle-control-wrapper">
+                        <label class="switch-tactical" for="purifier-power-toggle">
+                            <input type="checkbox" id="purifier-power-toggle" checked>
+                            <span class="slider-tactical"></span>
+                        </label>
+                        <span class="toggle-state-label" id="purifier-toggle-label">Activo</span>
+                    </div>
+                </div>
+
+                <!-- Control 2: Selector de Velocidad Extractor HEPA -->
+                <div class="instrument-box">
+                    <span class="instrument-sub">Velocidad del Extractor</span>
+                    <div class="fan-selector-group">
+                        <button type="button" class="fan-speed-btn" data-speed="bajo">Bajo (35%)</button>
+                        <button type="button" class="fan-speed-btn active" data-speed="medio">Medio (65%)</button>
+                        <button type="button" class="fan-speed-btn" data-speed="alto">Alto (100%)</button>
+                    </div>
+                </div>
+
+                <!-- Control 3: Métrica Comparativa PM2.5 Antes vs Después y Delta -->
+                <div class="instrument-box efficiency-widget">
+                    <span class="instrument-sub">Eficiencia de Filtrado HEPA</span>
+                    <div class="efficiency-readout">
+                        <div class="eff-col">
+                            <small>Entrada</small>
+                            <span class="eff-val" id="eff-pm-before">18.4</span>
+                            <span class="eff-unit">µg/m³</span>
+                        </div>
+                        <span class="eff-arrow">➔</span>
+                        <div class="eff-col">
+                            <small>Salida</small>
+                            <span class="eff-val highlight" id="eff-pm-after">4.2</span>
+                            <span class="eff-unit">µg/m³</span>
+                        </div>
+                        <div class="eff-delta-badge" id="eff-delta-badge">
+                            <span>▼</span> -77.2%
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones de Acción Instrumental -->
+            <div class="purifier-actions-bar">
+                <button id="btn-purificacion" class="btn-primary btn-instrumental">
+                    Diagnóstico Predictivo & Inferencia ML
+                </button>
+                <button id="btn-pdf" class="btn-secondary btn-instrumental">
+                    Exportar Reporte Técnico PDF
+                </button>
+            </div>
+
+            <!-- Resultados del Diagnóstico ML y Mitigación -->
             <div id="plan-result" class="plan-result" style="display: none;"></div>
         </section>
         </div> <!-- FIN VISTA DASHBOARD -->
@@ -304,9 +398,20 @@
         -->
         <div id="view-historial" class="view-section" style="display: none;">
             <div class="card full-width-card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                    <h2>Historial Completo de Datos</h2>
-                    <button id="btn-pdf-2" class="btn-primary">📄 Descargar Reporte PDF</button>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+                    <div>
+                        <h2>Historial Completo de Telemetría</h2>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">Registro continuo de estaciones de monitoreo en Ubaté</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                        <select id="filter-history-period" class="cms-input" style="padding: 0.5rem 0.75rem; font-size: 0.85rem; width: auto;">
+                            <option value="all">Todas las lecturas en memoria</option>
+                            <option value="last10">Últimas 10 muestras</option>
+                            <option value="last20">Últimas 20 muestras</option>
+                        </select>
+                        <button id="btn-export-csv" class="btn-secondary" style="color: #10b981; border-color: #10b981;">Exportar CSV (Excel)</button>
+                        <button id="btn-pdf-2" class="btn-primary">Reporte PDF</button>
+                    </div>
                 </div>
                 <div class="table-responsive">
                     <table class="history-table">
@@ -339,16 +444,47 @@
           Contiene el contenedor del mapa y las opciones exclusivas de administrador.
         -->
         <div id="view-mapa" class="view-section" style="display: none;">
-            <div class="card full-width-card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                    <h2>Geolocalización de Sensores - Ubaté</h2>
-                    <div id="admin-map-controls" style="display: none; gap: 1rem;">
-                        <button id="btn-edit-map" class="btn-secondary" style="color: var(--primary-blue); border-color: var(--primary-blue);">Habilitar Edición</button>
+            <div class="card full-width-card map-view-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+                    <div>
+                        <h2>Red de Estaciones Georreferenciadas - Ubaté</h2>
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">Marcadores numéricos en vivo (Estilo PurpleAir) • Resolución 2254</span>
+                    </div>
+                    <div id="admin-map-controls" style="display: none; gap: 0.75rem;">
+                        <button id="btn-edit-map" class="btn-secondary">Habilitar Edición</button>
                         <button id="btn-save-map" class="btn-primary" style="display: none;">Guardar Ubicaciones</button>
                     </div>
                 </div>
-                <p id="map-instructions" style="color: #666; margin-bottom: 1rem;">Ubicación en tiempo real de las estaciones de monitoreo y su índice de calidad del aire (AQI).</p>
-                <div id="sensor-map"></div>
+                <p id="map-instructions" style="color: var(--text-muted); margin-bottom: 0.75rem; font-size: 0.85rem;">Ubicación en tiempo real de las estaciones de monitoreo y su índice de calidad del aire (AQI).</p>
+                
+                <div class="map-wrapper-relative">
+                    <div id="sensor-map"></div>
+                    <!-- Tarjeta Flotante Overlay de Ubaté -->
+                    <div class="map-stats-overlay">
+                        <div class="overlay-header">
+                            <span class="overlay-dot"></span>
+                            <strong>Valle de Ubaté • Telemetría Geográfica</strong>
+                        </div>
+                        <div class="overlay-grid">
+                            <div class="overlay-item">
+                                <small>Altitud</small>
+                                <strong>2,550 msnm</strong>
+                            </div>
+                            <div class="overlay-item">
+                                <small>Topografía</small>
+                                <strong>Altiplano Andino</strong>
+                            </div>
+                            <div class="overlay-item">
+                                <small>Microclima</small>
+                                <strong>Inversión Térmica</strong>
+                            </div>
+                            <div class="overlay-item">
+                                <small>Vientos Alisios</small>
+                                <strong>NE 8.2 km/h</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <!-- FIN VISTA MAPA -->
@@ -368,7 +504,7 @@
                             Vigencia actual: <span id="privacy-display-date">18 de Septiembre de 2026</span> | Ley 1581 de 2012 (Colombia)
                         </div>
                     </div>
-                    <button id="btn-print-privacy" class="btn-secondary" style="color: var(--primary-blue); border-color: var(--primary-blue);">🖨️ Imprimir / Guardar</button>
+                    <button id="btn-print-privacy" class="btn-secondary" style="color: var(--primary-blue); border-color: var(--primary-blue);">Imprimir / Guardar</button>
                 </div>
                 <div class="privacy-body" id="privacy-display-content">
                     <!-- Se renderiza desde CMSManager -->
@@ -388,23 +524,23 @@
                 <!-- SIDEBAR CMS -->
                 <aside class="cms-sidebar">
                     <div class="cms-sidebar-header">
-                        <h3>⚙️ Panel CMS</h3>
+                        <h3>Panel CMS</h3>
                         <p>Gestor de Contenidos y Configuración</p>
                     </div>
                     <button class="cms-tab-btn active" data-cms-tab="cms-politicas">
-                        <span class="tab-icon">📜</span> Políticas de Privacidad
+                        Políticas de Privacidad
                     </button>
                     <button class="cms-tab-btn" data-cms-tab="cms-identidad">
-                        <span class="tab-icon">🏛️</span> Identidad y Avisos
+                        Identidad y Avisos
                     </button>
                     <button class="cms-tab-btn" data-cms-tab="cms-umbrales">
-                        <span class="tab-icon">⚠️</span> Umbrales de Calidad
+                        Umbrales de Calidad
                     </button>
                     <button class="cms-tab-btn" data-cms-tab="cms-estaciones">
-                        <span class="tab-icon">📡</span> Estaciones de Monitoreo
+                        Estaciones de Monitoreo
                     </button>
                     <button class="cms-tab-btn" data-cms-tab="cms-seguridad">
-                        <span class="tab-icon">🛡️</span> Roles y Seguridad
+                        Roles y Seguridad
                     </button>
                 </aside>
 
@@ -433,7 +569,7 @@
                             <span class="help-text">Separa los párrafos o artículos con saltos de línea dobles para estructurarlos limpiamente.</span>
                         </div>
                         <div class="cms-actions">
-                            <button type="button" class="btn-primary" id="cms-save-privacy-btn">💾 Guardar Políticas de Privacidad</button>
+                            <button type="button" class="btn-primary" id="cms-save-privacy-btn">Guardar Políticas de Privacidad</button>
                         </div>
                         <div id="cms-msg-privacy" class="cms-status-msg"></div>
                     </div>
@@ -457,13 +593,13 @@
                             </div>
                         </div>
                         <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 1.5rem 0;">
-                        <h4 style="color: var(--primary-blue); margin-bottom: 0.5rem;">📢 Banner de Avisos Oficiales a la Comunidad</h4>
+                        <h4 style="color: var(--primary-blue); margin-bottom: 0.5rem;">Banner de Avisos Oficiales a la Comunidad</h4>
                         <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1rem;">Muestra un comunicado destacado en la parte superior del dashboard a todos los usuarios.</p>
                         
                         <div class="cms-form-group">
                             <label class="cms-toggle-label">
                                 <span class="cms-toggle-switch">
-                                    <input type="checkbox" id="cms-toggle-announcement">
+                                     <input type="checkbox" id="cms-toggle-announcement">
                                     <span class="cms-slider"></span>
                                 </span>
                                 <span>Activar banner de aviso a la comunidad</span>
@@ -478,7 +614,7 @@
                             <textarea id="cms-textarea-announcement-msg" class="cms-textarea" placeholder="Ej: Se recomienda a la comunidad de Ubaté..."></textarea>
                         </div>
                         <div class="cms-actions">
-                            <button type="button" class="btn-primary" id="cms-save-identity-btn">💾 Guardar Identidad y Avisos</button>
+                            <button type="button" class="btn-primary" id="cms-save-identity-btn">Guardar Identidad y Avisos</button>
                         </div>
                         <div id="cms-msg-identity" class="cms-status-msg"></div>
                     </div>
@@ -519,7 +655,7 @@
                             </div>
                         </div>
                         <div class="cms-actions">
-                            <button type="button" class="btn-primary" id="cms-save-thresholds-btn">💾 Guardar Umbrales de Calidad</button>
+                            <button type="button" class="btn-primary" id="cms-save-thresholds-btn">Guardar Umbrales de Calidad</button>
                         </div>
                         <div id="cms-msg-thresholds" class="cms-status-msg"></div>
                     </div>
@@ -547,7 +683,7 @@
                             </div>
                         </div>
                         <div class="cms-actions">
-                            <button type="button" class="btn-primary" id="cms-save-stations-btn">💾 Guardar Nombres de Estaciones</button>
+                            <button type="button" class="btn-primary" id="cms-save-stations-btn">Guardar Nombres de Estaciones</button>
                         </div>
                         <div id="cms-msg-stations" class="cms-status-msg"></div>
                     </div>
@@ -573,7 +709,7 @@
                             <span class="help-text">Código de control administrativo interno de SIS AIR.</span>
                         </div>
                         <div class="cms-actions">
-                            <button type="button" class="btn-primary" id="cms-save-security-btn">💾 Actualizar Clave Maestra</button>
+                            <button type="button" class="btn-primary" id="cms-save-security-btn">Actualizar Clave Maestra</button>
                         </div>
                         <div id="cms-msg-security" class="cms-status-msg"></div>
                     </div>
@@ -582,6 +718,127 @@
             </div>
         </div>
         <!-- FIN VISTA CMS -->
+
+        <!-- 
+          ============================================
+          VISTA 7: VALIDACIÓN CON STAKEHOLDERS (UAT / SUS)
+          ============================================
+          Registro de pruebas de aceptación de usuarios finales, métricas SUS
+          y matriz de trazabilidad del ciclo de mejora continua en la interfaz.
+        -->
+        <div id="view-stakeholders" class="view-section" style="display: none;">
+            <div class="card full-width-card" style="margin-bottom: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid var(--surface-border); padding-bottom: 1rem; margin-bottom: 1.25rem;">
+                    <div>
+                        <h2>Validación con Stakeholders y Pruebas de Aceptación (UAT)</h2>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.2rem;">Evaluación de usabilidad mediante la Escala SUS (System Usability Scale) y trazabilidad de mejoras implementadas.</p>
+                    </div>
+                    <div style="display: flex; gap: 1rem; align-items: center;">
+                        <div class="card" style="padding: 0.75rem 1.25rem; background: var(--bg-color); border: 1px solid var(--surface-border); text-align: center;">
+                            <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; display: block;">Score SUS Promedio</span>
+                            <span id="sus-average-score" style="font-size: 1.75rem; font-weight: 800; color: #10b981;">85.0</span>
+                            <small style="color: var(--text-muted); display: block; font-size: 0.75rem;">Grado A (Excelente)</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Matriz de Trazabilidad de Hallazgos y Mejoras -->
+                <h3 style="color: var(--primary-blue); margin-bottom: 0.75rem;">Matriz de Trazabilidad de Hallazgos y Ciclo de Mejora</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Evidencia auditable de los requerimientos identificados por actores clave de Ubaté y su resolución técnica en el sistema.</p>
+                
+                <div class="table-responsive" style="margin-bottom: 2rem;">
+                    <table class="history-table" style="font-size: 0.85rem;">
+                        <thead>
+                            <tr>
+                                <th>Stakeholder / Entidad</th>
+                                <th>Rol Evaluador</th>
+                                <th>Score SUS</th>
+                                <th>Hallazgo en Pruebas UAT</th>
+                                <th>Impacto</th>
+                                <th>Acción de Mejora Implementada</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stakeholders-matrix-tbody">
+                            <!-- Inyectado dinámicamente con JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Formulario de Nueva Evaluación SUS -->
+                <div class="card" style="background: var(--bg-color); border: 1px solid var(--surface-border); padding: 1.5rem;">
+                    <h3 style="color: var(--primary-blue); margin-bottom: 0.5rem;">Registrar Nueva Evaluación de Aceptación (Instrumento SUS)</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">Completa el formulario para registrar la retroalimentación de un stakeholder y actualizar la métrica SUS global.</p>
+
+                    <form id="form-stakeholder-evaluation">
+                        <div class="cms-form-grid" style="margin-bottom: 1.25rem;">
+                            <div class="cms-form-group">
+                                <label for="uat-entity">Entidad o Actor Institucional</label>
+                                <input type="text" id="uat-entity" class="cms-input" required placeholder="Ej: CAR Cundinamarca, JAC Ubaté">
+                            </div>
+                            <div class="cms-form-group">
+                                <label for="uat-evaluator">Nombre del Evaluador</label>
+                                <input type="text" id="uat-evaluator" class="cms-input" required placeholder="Ej: Ing. Andrea Morales">
+                            </div>
+                            <div class="cms-form-group">
+                                <label for="uat-role">Cargo / Rol</label>
+                                <input type="text" id="uat-role" class="cms-input" required placeholder="Ej: Analista de Calidad Ambiental">
+                            </div>
+                            <div class="cms-form-group">
+                                <label for="uat-impact">Nivel de Impacto del Hallazgo</label>
+                                <select id="uat-impact" class="cms-input">
+                                    <option value="Bajo">Bajo</option>
+                                    <option value="Medio">Medio</option>
+                                    <option value="Alto" selected>Alto</option>
+                                    <option value="Crítico">Crítico</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Preguntas Clave SUS -->
+                        <div style="background: var(--card-bg); padding: 1rem; border-radius: 8px; border: 1px solid var(--surface-border); margin-bottom: 1.25rem;">
+                            <h4 style="font-size: 0.95rem; margin-bottom: 0.75rem; color: var(--text-primary);">Evaluación de Usabilidad (Escala 1: Total desacuerdo a 5: Total acuerdo)</h4>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; font-size: 0.85rem;">
+                                <div>
+                                    <label>1. Usaría este sistema frecuentemente:</label>
+                                    <input type="range" min="1" max="5" value="5" id="sus-q1" class="sus-slider" oninput="this.nextElementSibling.value = this.value">
+                                    <output>5</output>
+                                </div>
+                                <div>
+                                    <label>2. Encontré el sistema fácil de utilizar:</label>
+                                    <input type="range" min="1" max="5" value="5" id="sus-q2" class="sus-slider" oninput="this.nextElementSibling.value = this.value">
+                                    <output>5</output>
+                                </div>
+                                <div>
+                                    <label>3. Las funciones del sistema están bien integradas:</label>
+                                    <input type="range" min="1" max="5" value="4" id="sus-q3" class="sus-slider" oninput="this.nextElementSibling.value = this.value">
+                                    <output>4</output>
+                                </div>
+                                <div>
+                                    <label>4. Me siento muy confiado al usar la plataforma:</label>
+                                    <input type="range" min="1" max="5" value="5" id="sus-q4" class="sus-slider" oninput="this.nextElementSibling.value = this.value">
+                                    <output>5</output>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="cms-form-group" style="margin-bottom: 1rem;">
+                            <label for="uat-finding">Hallazgo u Observación Identificada en la Prueba</label>
+                            <textarea id="uat-finding" class="cms-textarea" required placeholder="Describe la oportunidad de mejora o requerimiento detectado por el stakeholder..."></textarea>
+                        </div>
+
+                        <div class="cms-form-group" style="margin-bottom: 1.25rem;">
+                            <label for="uat-action">Acción de Mejora Técnica Implementada en la Interfaz</label>
+                            <textarea id="uat-action" class="cms-textarea" required placeholder="Describe cómo se solucionó en el sistema (ej: adición de filtros temporales, optimización visual)..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-primary">Registrar Hallazgo y Actualizar Matriz UAT</button>
+                    </form>
+                    <div id="uat-feedback-msg" class="cms-status-msg"></div>
+                </div>
+            </div>
+        </div>
+        <!-- FIN VISTA STAKEHOLDERS -->
 
     </main>
 

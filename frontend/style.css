@@ -9,15 +9,16 @@
 :root, [data-theme="light"] {
     /* Tipografía */
     --font-main: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
 
-    /* Colores Principales */
-    --primary-dark: #091e2b;
-    --primary-blue: #0f3d56;
-    --primary-teal: #14597a;
+    /* Colores Principales (Técnicos Industriales) */
+    --primary-dark: #09111e;
+    --primary-blue: #0f2537;
+    --primary-teal: #0284c7;
     --accent-cyan: #0284c7;
     --accent-glow: #38bdf8;
     
-    /* Superficies y Fondos */
+    /* Superficies y Fondos Técnicos */
     --bg-color: #f8fafc;
     --card-bg: #ffffff;
     --surface-border: #e2e8f0;
@@ -27,39 +28,39 @@
     --text-secondary: #334155;
     --text-muted: #64748b;
 
-    /* Semántica de Calidad del Aire (AQI) */
+    /* Semántica de Calidad del Aire (AQI - Res. 2254 de 2017) */
     --aqi-good: #10b981;
-    --aqi-good-bg: #ecfdf5;
-    --aqi-good-border: #a7f3d0;
-    --aqi-good-text: #065f46;
+    --aqi-good-bg: rgba(16, 185, 129, 0.12);
+    --aqi-good-border: rgba(16, 185, 129, 0.35);
+    --aqi-good-text: #059669;
 
     --aqi-moderate: #f59e0b;
-    --aqi-moderate-bg: #fffbeb;
-    --aqi-moderate-border: #fde68a;
-    --aqi-moderate-text: #92400e;
+    --aqi-moderate-bg: rgba(245, 158, 11, 0.12);
+    --aqi-moderate-border: rgba(245, 158, 11, 0.35);
+    --aqi-moderate-text: #d97706;
 
     --aqi-bad: #ef4444;
-    --aqi-bad-bg: #fef2f2;
-    --aqi-bad-border: #fecaca;
-    --aqi-bad-text: #991b1b;
+    --aqi-bad-bg: rgba(239, 68, 68, 0.12);
+    --aqi-bad-border: rgba(239, 68, 68, 0.35);
+    --aqi-bad-text: #dc2626;
 
-    /* Sombras Elevadas */
-    --shadow-sm: 0 2px 4px rgba(15, 23, 42, 0.04);
-    --shadow-md: 0 6px 18px -3px rgba(15, 23, 42, 0.06), 0 2px 6px -2px rgba(15, 23, 42, 0.03);
-    --shadow-lg: 0 16px 32px -6px rgba(15, 23, 42, 0.09), 0 6px 12px -3px rgba(15, 23, 42, 0.04);
-    --shadow-hover: 0 20px 35px -5px rgba(15, 23, 42, 0.12), 0 8px 16px -4px rgba(15, 23, 42, 0.06);
+    /* Sombras Industriales */
+    --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
+    --shadow-md: 0 4px 12px -2px rgba(15, 23, 42, 0.08);
+    --shadow-lg: 0 12px 24px -4px rgba(15, 23, 42, 0.1);
+    --shadow-hover: 0 8px 20px -2px rgba(15, 23, 42, 0.12);
 }
 
 [data-theme="dark"] {
-    --primary-dark: #040910;
+    --primary-dark: #070d17;
     --primary-blue: #38bdf8;
     --primary-teal: #0ea5e9;
     --accent-cyan: #38bdf8;
     --accent-glow: #0284c7;
     
-    /* Superficies y Fondos Oscuros */
-    --bg-color: #080d14;
-    --card-bg: #0f1722;
+    /* Superficies y Fondos Técnicos Neutros (#0f172a / #1e293b) */
+    --bg-color: #090e17;
+    --card-bg: #0f172a;
     --surface-border: #1e293b;
     
     /* Texto */
@@ -68,26 +69,26 @@
     --text-muted: #94a3b8;
 
     /* Semántica AQI en Modo Oscuro */
-    --aqi-good: #34d399;
-    --aqi-good-bg: rgba(16, 185, 129, 0.18);
-    --aqi-good-border: rgba(16, 185, 129, 0.45);
-    --aqi-good-text: #6ee7b7;
+    --aqi-good: #10b981;
+    --aqi-good-bg: rgba(16, 185, 129, 0.15);
+    --aqi-good-border: rgba(16, 185, 129, 0.35);
+    --aqi-good-text: #34d399;
 
-    --aqi-moderate: #fbbf24;
-    --aqi-moderate-bg: rgba(245, 158, 11, 0.18);
-    --aqi-moderate-border: rgba(245, 158, 11, 0.45);
-    --aqi-moderate-text: #fde68a;
+    --aqi-moderate: #f59e0b;
+    --aqi-moderate-bg: rgba(245, 158, 11, 0.15);
+    --aqi-moderate-border: rgba(245, 158, 11, 0.35);
+    --aqi-moderate-text: #fbbf24;
 
-    --aqi-bad: #f87171;
-    --aqi-bad-bg: rgba(239, 68, 68, 0.18);
-    --aqi-bad-border: rgba(239, 68, 68, 0.45);
-    --aqi-bad-text: #fca5a5;
+    --aqi-bad: #ef4444;
+    --aqi-bad-bg: rgba(239, 68, 68, 0.15);
+    --aqi-bad-border: rgba(239, 68, 68, 0.35);
+    --aqi-bad-text: #f87171;
 
-    /* Sombras Oscuras con Glow */
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
-    --shadow-md: 0 8px 20px -3px rgba(0, 0, 0, 0.6);
-    --shadow-lg: 0 16px 36px -6px rgba(0, 0, 0, 0.8);
-    --shadow-hover: 0 20px 35px -5px rgba(0, 0, 0, 0.85);
+    /* Sombras Técnicas */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.65);
+    --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.6);
 }
 
 * {
@@ -613,340 +614,638 @@ header {
 }
 
 /* ==========================================
- * CONTENEDOR PRINCIPAL Y TARJETAS DE MÉTRICAS
+ * CONTENEDOR PRINCIPAL Y TARJETAS DE TELEMETRÍA (GRAFANA INDUSTRIAL)
  * ========================================== */
 .dashboard-container {
-    padding: 2rem;
-    max-width: 1280px;
+    padding: 1.5rem 1.75rem;
+    max-width: 1360px;
     margin: 0 auto;
 }
 
-/* Grilla de Métricas en Tiempo Real */
+/* Grilla de Métricas de Alta Densidad (Density Level 8) */
 .metrics-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
-    gap: 1.25rem;
-    margin-bottom: 2rem;
+    gap: 0.85rem;
+    margin-bottom: 1.5rem;
 }
 
+/* Tarjeta Técnica Neutral: Fondo invariante, borde de estado a la izquierda */
 .card {
     position: relative;
-    background: rgba(255, 255, 255, 0.96);
-    backdrop-filter: blur(12px);
-    border-radius: 18px;
-    padding: 1.35rem 1.15rem;
-    text-align: center;
-    border: 1px solid rgba(226, 232, 240, 0.9);
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03), 0 1px 3px rgba(15, 23, 42, 0.04);
+    background: var(--card-bg) !important;
+    border: 1px solid var(--surface-border);
+    border-left: 3.5px solid var(--text-muted);
+    border-radius: 6px;
+    padding: 0.8rem 0.95rem;
+    text-align: left;
+    box-shadow: var(--shadow-sm);
     overflow: hidden;
-    transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
     cursor: pointer;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    min-height: 98px;
 }
 
 .card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 20px 30px -8px rgba(15, 23, 42, 0.1), 0 8px 12px -4px rgba(15, 23, 42, 0.05);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
     border-color: #cbd5e1;
 }
 
-.card-top-accent {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 5px;
-    background: #cbd5e1;
-    transition: background-color 0.3s ease;
+[data-theme="dark"] .card:hover {
+    border-color: #334155;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
 }
 
 .card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
 }
 
 .metric-tag {
-    font-size: 0.75rem;
-    font-weight: 800;
+    font-family: var(--font-main);
+    font-size: 0.72rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #475569;
-    background: #f1f5f9;
-    padding: 0.2rem 0.55rem;
-    border-radius: 10px;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    background: transparent;
+    padding: 0;
 }
 
 .metric-tag.highlight {
-    background: #e0f2fe;
-    color: #0369a1;
+    color: var(--accent-cyan);
+    font-weight: 800;
 }
 
 .metric-tag.weather {
-    background: #f0fdf4;
-    color: #15803d;
-}
-
-.card-live-dot {
-    width: 6px;
-    height: 6px;
-    background: #10b981;
-    border-radius: 50%;
-    animation: livePulse 2s infinite;
+    color: var(--text-secondary);
 }
 
 .weather-icon {
     font-size: 0.95rem;
+    opacity: 0.85;
 }
 
+/* Lectura Numérica Tabular Monospace con Unidad Atenuada */
 .metric-body {
-    margin: 0.25rem 0;
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    margin: 0.2rem 0;
 }
 
 .card .value {
-    font-family: var(--font-main);
-    font-size: 2.1rem;
-    font-weight: 800;
-    letter-spacing: -1px;
-    line-height: 1.1;
-    color: var(--text-primary);
-    margin-bottom: 0.15rem;
+    font-family: var(--font-mono);
+    font-size: 1.75rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.05;
+    color: var(--text-primary) !important;
+    letter-spacing: -0.03em;
 }
 
 .card .unit {
+    font-family: var(--font-mono);
     color: var(--text-muted);
-    font-size: 0.78rem;
-    font-weight: 600;
-}
-
-.card-footer {
-    margin-top: 0.5rem;
-}
-
-.card .status {
     font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Pastilla/Badge Compacta de AQI (Res. 2254 de 2017) en Esquina Superior */
+.status.aqi-pill {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
     font-weight: 700;
-    padding: 0.2rem 0.65rem;
-    border-radius: 20px;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    letter-spacing: 0.02em;
     display: inline-block;
-    transition: all 0.3s;
-    background: #f1f5f9;
-    color: var(--text-secondary);
+    transition: all 150ms ease;
+    background: var(--bg-color);
+    color: var(--text-muted);
+    border: 1px solid var(--surface-border);
 }
 
-.status.aqi-pill-normal {
-    background: #f0f9ff;
-    color: #0284c7;
-    border: 1px solid #bae6fd;
+/* Semántica AQI: Borde lateral y pastilla compacta SIN saturar el fondo de la tarjeta */
+.card.aqi-good {
+    border-left-color: var(--aqi-good) !important;
 }
 
-/* Estados Dinámicos de Calidad de Aire (AQI) */
-.card.aqi-good .card-top-accent {
-    background: linear-gradient(90deg, #10b981, #34d399);
-}
-
-.card.aqi-good:hover {
-    box-shadow: 0 20px 32px -8px rgba(16, 185, 129, 0.22), 0 0 0 1px rgba(16, 185, 129, 0.4);
-    border-color: #a7f3d0;
-}
-
-.card.aqi-good .value {
-    color: var(--aqi-good-text);
-}
-
-.card.aqi-good .status {
+.card.aqi-good .status.aqi-pill {
     background: var(--aqi-good-bg);
-    color: var(--aqi-good-text);
+    color: var(--aqi-good);
     border: 1px solid var(--aqi-good-border);
 }
 
-.card.aqi-moderate .card-top-accent {
-    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+.card.aqi-moderate {
+    border-left-color: var(--aqi-moderate) !important;
 }
 
-.card.aqi-moderate:hover {
-    box-shadow: 0 20px 32px -8px rgba(245, 158, 11, 0.22), 0 0 0 1px rgba(245, 158, 11, 0.4);
-    border-color: #fde68a;
-}
-
-.card.aqi-moderate .value {
-    color: var(--aqi-moderate-text);
-}
-
-.card.aqi-moderate .status {
+.card.aqi-moderate .status.aqi-pill {
     background: var(--aqi-moderate-bg);
-    color: var(--aqi-moderate-text);
+    color: var(--aqi-moderate);
     border: 1px solid var(--aqi-moderate-border);
 }
 
-.card.aqi-bad .card-top-accent {
-    background: linear-gradient(90deg, #ef4444, #f87171);
+.card.aqi-bad {
+    border-left-color: var(--aqi-bad) !important;
 }
 
-.card.aqi-bad:hover {
-    box-shadow: 0 20px 32px -8px rgba(239, 68, 68, 0.28), 0 0 0 1px rgba(239, 68, 68, 0.45);
-    border-color: #fecaca;
-}
-
-.card.aqi-bad .value {
-    color: var(--aqi-bad-text);
-}
-
-.card.aqi-bad .status {
+.card.aqi-bad .status.aqi-pill {
     background: var(--aqi-bad-bg);
-    color: var(--aqi-bad-text);
+    color: var(--aqi-bad);
     border: 1px solid var(--aqi-bad-border);
 }
 
-.card-weather .card-top-accent {
-    background: linear-gradient(90deg, #0284c7, #38bdf8);
-}
-
-.card-weather:hover {
-    box-shadow: 0 20px 32px -8px rgba(2, 132, 199, 0.2), 0 0 0 1px rgba(2, 132, 199, 0.35);
-    border-color: #bae6fd;
+/* Tarjetas Climáticas (Temperatura, Humedad, Presión) */
+.card.card-weather {
+    border-left-color: #0284c7 !important;
 }
 
 /* ==========================================
- * SECCIÓN DE GRÁFICAS EN TIEMPO REAL
+ * SECCIÓN DE GRÁFICAS EN TIEMPO REAL (ESTILO GRAFANA INDUSTRIAL)
  * ========================================== */
 .charts-section {
     background-color: var(--card-bg);
-    border-radius: 20px;
-    padding: 2rem;
-    margin-bottom: 2.5rem;
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.5rem;
     border: 1px solid var(--surface-border);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-sm);
 }
 
 .charts-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: 1.75rem;
-    border-bottom: 1px solid #f1f5f9;
-    padding-bottom: 1.25rem;
+    align-items: center;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--surface-border);
+    padding-bottom: 0.75rem;
     flex-wrap: wrap;
-    gap: 1rem;
+    gap: 0.75rem;
 }
 
 .charts-header h2 {
-    font-size: 1.3rem;
-    color: var(--primary-blue);
+    font-size: 1.1rem;
+    color: var(--text-primary);
     font-weight: 700;
+    letter-spacing: -0.02em;
 }
 
 .chart-legend-pills {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.4rem;
 }
 
 .legend-badge {
-    font-size: 0.72rem;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
     font-weight: 700;
-    padding: 0.25rem 0.65rem;
-    border-radius: 20px;
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
 }
 
 .badge-pm {
-    background: #e0f2fe;
-    color: #0369a1;
+    background: rgba(56, 189, 248, 0.12);
+    color: #0284c7;
+    border: 1px solid rgba(56, 189, 248, 0.3);
 }
 
 .badge-gases {
-    background: #fef3c7;
-    color: #92400e;
+    background: rgba(245, 158, 11, 0.12);
+    color: #d97706;
+    border: 1px solid rgba(245, 158, 11, 0.3);
 }
 
 .badge-clima {
-    background: #dcfce7;
-    color: #166534;
+    background: rgba(16, 185, 129, 0.12);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 .charts-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+    gap: 1rem;
 }
 
 .chart-card {
-    background: #f8fafc;
+    background: var(--bg-color);
     border: 1px solid var(--surface-border);
-    border-radius: 14px;
-    padding: 1.25rem;
-    transition: all 0.25s ease;
+    border-radius: 6px;
+    padding: 0.85rem 1rem;
+    transition: border-color 150ms ease;
 }
 
 .chart-card:hover {
-    background: #ffffff;
-    box-shadow: var(--shadow-md);
-    border-color: #cbd5e1;
+    border-color: #0284c7;
 }
 
 .chart-title-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: 0.65rem;
 }
 
 .chart-title-bar h3 {
-    font-size: 0.95rem;
+    font-size: 0.88rem;
     font-weight: 700;
-    color: var(--text-secondary);
+    color: var(--text-primary);
 }
 
 .chart-chip {
-    font-size: 0.72rem;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
     font-weight: 700;
-    color: var(--accent-cyan);
-    background: #e0f2fe;
-    padding: 0.15rem 0.55rem;
-    border-radius: 10px;
+    color: #0284c7;
+    background: rgba(2, 132, 199, 0.1);
+    padding: 0.15rem 0.45rem;
+    border-radius: 3px;
+    border: 1px solid rgba(2, 132, 199, 0.2);
 }
 
 .chart-container {
     position: relative;
-    height: 280px;
+    height: 230px;
     width: 100%;
 }
 
-/* ==========================================
- * SECCIÓN DE ACCIONES (REPORTES & IA)
- * ========================================== */
-.action-section {
-    text-align: center;
+/* ============================================================================
+ * MÓDULO DEL TERMO PURIFICADOR / HARDWARE IoT (ESTILO IQAIR & RACK INDUSTRIAL)
+ * ============================================================================ */
+.purifier-instrument-panel {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--surface-border) !important;
+    border-top: 3.5px solid #0284c7 !important;
+    border-left: 1px solid var(--surface-border) !important;
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    margin-top: 1.5rem;
     margin-bottom: 2rem;
+    box-shadow: var(--shadow-sm);
+    display: block !important;
 }
 
-.action-buttons {
+.panel-header-row {
     display: flex;
-    justify-content: center;
-    gap: 1.25rem;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--surface-border);
+    padding-bottom: 0.85rem;
+    margin-bottom: 1.15rem;
     flex-wrap: wrap;
+    gap: 0.75rem;
 }
 
-.btn-large {
-    padding: 0.95rem 2rem;
-    font-size: 1rem;
-    border-radius: 12px;
+.panel-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+}
+
+.device-icon-box {
+    width: 42px;
+    height: 42px;
+    background: rgba(2, 132, 199, 0.1);
+    border: 1px solid rgba(2, 132, 199, 0.25);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+}
+
+.device-label-meta {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
     font-weight: 700;
+    color: #0284c7;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.device-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0.1rem 0 0 0;
+    letter-spacing: -0.02em;
+}
+
+.device-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    padding: 0.35rem 0.85rem;
+    border-radius: 4px;
+    background: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    transition: all 150ms ease;
+}
+
+.device-indicator-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 8px #10b981;
+    animation: livePulse 1.8s infinite;
+}
+
+.device-status-badge.standby {
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+    border-color: rgba(245, 158, 11, 0.35);
+}
+
+.device-status-badge.standby .device-indicator-dot {
+    background: #f59e0b;
+    box-shadow: 0 0 6px #f59e0b;
+    animation: none;
+}
+
+/* Grilla Instrumental de Control de Dispositivo */
+.instrumental-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.instrument-box {
+    background: var(--bg-color);
+    border: 1px solid var(--surface-border);
+    border-radius: 6px;
+    padding: 0.85rem 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 86px;
+}
+
+.instrument-sub {
+    font-family: var(--font-main);
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-bottom: 0.45rem;
+}
+
+/* Control 1: Toggle Switch Táctico Industrial */
+.toggle-control-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+}
+
+.switch-tactical {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 24px;
+    margin: 0;
+}
+
+.switch-tactical input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider-tactical {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #cbd5e1;
+    transition: 150ms ease;
+    border-radius: 4px;
+    border: 1px solid #94a3b8;
+}
+
+[data-theme="dark"] .slider-tactical {
+    background-color: #1e293b;
+    border-color: #475569;
+}
+
+.slider-tactical:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: #ffffff;
+    transition: 150ms ease;
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.switch-tactical input:checked + .slider-tactical {
+    background-color: #0284c7;
+    border-color: #0284c7;
+}
+
+.switch-tactical input:checked + .slider-tactical:before {
+    transform: translateX(23px);
+}
+
+.toggle-state-label {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Control 2: Selector de Velocidad Extractor HEPA */
+.fan-selector-group {
+    display: flex;
+    gap: 3px;
+    background: var(--card-bg);
+    padding: 3px;
+    border-radius: 4px;
+    border: 1px solid var(--surface-border);
+}
+
+.fan-speed-btn {
+    flex: 1;
+    padding: 0.4rem 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 150ms ease;
+    text-align: center;
+}
+
+.fan-speed-btn:hover {
+    color: var(--text-primary);
+    background: var(--bg-color);
+}
+
+.fan-speed-btn.active {
+    background: #0284c7;
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 1px 3px rgba(2, 132, 199, 0.35);
+}
+
+/* Control 3: Widget Comparativo de Eficiencia PM2.5 Antes vs Después */
+.efficiency-readout {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65rem;
+}
+
+.eff-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.eff-col small {
+    font-family: var(--font-main);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+}
+
+.eff-val {
+    font-family: var(--font-mono);
+    font-size: 1.25rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-primary);
+    line-height: 1.1;
+}
+
+.eff-val.highlight {
+    color: #10b981;
+}
+
+.eff-unit {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-muted);
+}
+
+.eff-arrow {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+.eff-delta-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 0.25rem 0.55rem;
+    border-radius: 4px;
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+.eff-delta-badge.neutral {
+    background: rgba(100, 116, 139, 0.15);
+    color: #94a3b8;
+    border-color: rgba(100, 116, 139, 0.3);
+}
+
+/* Barra de Botones de Acción Instrumental */
+.purifier-actions-bar {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+}
+
+.btn-instrumental {
+    padding: 0.65rem 1.35rem;
+    font-family: var(--font-main);
+    font-size: 0.85rem;
+    font-weight: 700;
+    border-radius: 6px;
+    transition: all 150ms ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
     width: auto;
-    min-width: 250px;
+    cursor: pointer;
+}
+
+.btn-instrumental.btn-primary {
+    background: #0284c7;
+    color: #ffffff;
+    border: 1px solid #0284c7;
+    box-shadow: 0 1px 3px rgba(2, 132, 199, 0.35);
+}
+
+.btn-instrumental.btn-primary:hover {
+    background: #0369a1;
+    border-color: #0369a1;
+    transform: translateY(-1px);
+}
+
+.btn-instrumental.btn-secondary {
+    background: var(--bg-color);
+    border: 1px solid var(--surface-border);
+    color: var(--text-primary);
+}
+
+.btn-instrumental.btn-secondary:hover {
+    background: var(--card-bg);
+    border-color: #94a3b8;
+    color: var(--text-primary);
+    transform: translateY(-1px);
+}
+
+[data-theme="dark"] .btn-instrumental.btn-secondary {
+    background: #090e17;
+    border-color: #1e293b;
+    color: #f8fafc;
+}
+
+[data-theme="dark"] .btn-instrumental.btn-secondary:hover {
+    background: #0f172a;
+    border-color: #38bdf8;
+    color: #ffffff;
+}
+
+.btn-instrumental:active {
+    transform: translateY(0);
 }
 
 .plan-result {
-    margin-top: 1.5rem;
-    padding: 1.5rem;
-    background: #f8fafc;
-    border-left: 5px solid var(--accent-cyan);
-    border-radius: 12px;
+    margin-top: 1.25rem;
+    padding: 1.25rem;
+    background: var(--bg-color);
+    border-left: 4px solid #0284c7;
+    border-radius: 6px;
     text-align: left;
     box-shadow: var(--shadow-sm);
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--surface-border);
 }
 
 /* --- MODAL STYLES --- */
@@ -1100,12 +1399,139 @@ header {
     overflow-y: auto;
 }
 
-#sensor-map {
-    height: 500px;
+/* ============================================================================
+ * MAPA LEAFLET CON MARCADORES PURPLEAIR Y OVERLAY GEOGRÁFICO DE UBATÉ
+ * ============================================================================ */
+.map-view-card {
+    padding: 1.25rem 1.5rem;
+}
+
+.map-wrapper-relative {
+    position: relative;
     width: 100%;
-    border-radius: 12px;
-    z-index: 1; /* Para no sobreponerse a otros menús desplegables */
-    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--surface-border);
+}
+
+#sensor-map {
+    height: 520px;
+    width: 100%;
+    z-index: 1;
+}
+
+/* Marcadores Circulares Planos estilo PurpleAir con PM2.5 Incrustado */
+.pa-marker-wrapper {
+    background: transparent !important;
+    border: none !important;
+}
+
+.pa-marker-circle {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.45);
+    font-family: var(--font-mono);
+    line-height: 1;
+    cursor: pointer;
+    transition: transform 150ms ease, box-shadow 150ms ease;
+    user-select: none;
+}
+
+.pa-marker-circle:hover {
+    transform: scale(1.18);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.55);
+}
+
+.pa-marker-num {
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+}
+
+.pa-marker-unit {
+    font-size: 0.55rem;
+    font-weight: 600;
+    opacity: 0.9;
+    text-transform: uppercase;
+    margin-top: -1px;
+}
+
+/* Tarjeta Flotante Superpuesta (Overlay) de Ubaté (2550 msnm) */
+.map-stats-overlay {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(15, 23, 42, 0.12);
+    border-radius: 6px;
+    padding: 0.75rem 0.95rem;
+    width: 250px;
+    color: var(--text-primary);
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12);
+    pointer-events: auto;
+    transition: all 150ms ease;
+}
+
+[data-theme="dark"] .map-stats-overlay {
+    background: rgba(15, 23, 42, 0.88);
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
+    color: #f8fafc;
+}
+
+.overlay-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    border-bottom: 1px solid var(--surface-border);
+    padding-bottom: 0.4rem;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.01em;
+}
+
+.overlay-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #0284c7;
+    box-shadow: 0 0 6px #0284c7;
+}
+
+.overlay-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.45rem 0.6rem;
+}
+
+.overlay-item small {
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+}
+
+.overlay-item strong {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .overlay-item strong {
+    color: #f8fafc;
 }
 
 [data-theme="dark"] #sensor-map {
@@ -1118,7 +1544,7 @@ header {
 
 [data-theme="dark"] .leaflet-popup-content-wrapper,
 [data-theme="dark"] .leaflet-popup-tip {
-    background: #0f1722;
+    background: #0f172a;
     color: #f1f5f9;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
     border: 1px solid rgba(255, 255, 255, 0.12);
@@ -1801,53 +2227,44 @@ body, .card, .charts-section, .chart-card, .cms-wrapper, .cms-sidebar, .privacy-
     color: var(--text-primary);
 }
 
-/* Tarjetas de telemetría en Modo Oscuro */
+/* Tarjetas de telemetría en Modo Oscuro (Neutro Técnico #0f172a / Borde #1e293b) */
 [data-theme="dark"] .card {
-    background: rgba(16, 25, 36, 0.92);
-    border-color: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    background: #0f172a !important;
+    border-color: #1e293b;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
 }
 
 [data-theme="dark"] .card:hover {
-    border-color: rgba(56, 189, 248, 0.3);
-    box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.6), 0 0 15px rgba(56, 189, 248, 0.15);
+    border-color: #334155;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
 }
 
 [data-theme="dark"] .card .value {
-    color: #f8fafc;
+    color: #f8fafc !important;
 }
 
 [data-theme="dark"] .metric-tag {
-    background: rgba(255, 255, 255, 0.08);
-    color: #cbd5e1;
+    color: #94a3b8;
 }
 
 [data-theme="dark"] .metric-tag.highlight {
-    background: rgba(56, 189, 248, 0.18);
     color: #38bdf8;
 }
 
 [data-theme="dark"] .metric-tag.weather {
-    background: rgba(16, 185, 129, 0.18);
-    color: #34d399;
-}
-
-[data-theme="dark"] .card .status {
-    background: rgba(255, 255, 255, 0.08);
     color: #cbd5e1;
 }
 
-[data-theme="dark"] .status.aqi-pill-normal {
-    background: rgba(56, 189, 248, 0.14);
-    color: #38bdf8;
-    border-color: rgba(56, 189, 248, 0.35);
+[data-theme="dark"] .status.aqi-pill {
+    background: #090e17;
+    border-color: #1e293b;
 }
 
 /* Sección de Gráficas en Modo Oscuro */
 [data-theme="dark"] .charts-section {
-    background-color: #0f1722;
-    border-color: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
+    background-color: #0f172a;
+    border-color: #1e293b;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
 }
 
 [data-theme="dark"] .charts-header {
@@ -1855,17 +2272,28 @@ body, .card, .charts-section, .chart-card, .cms-wrapper, .cms-sidebar, .privacy-
 }
 
 [data-theme="dark"] .charts-header h2 {
-    color: #38bdf8;
+    color: #f8fafc;
 }
 
 [data-theme="dark"] .chart-card {
-    background: #091019;
-    border-color: rgba(255, 255, 255, 0.06);
+    background: #090e17;
+    border-color: #1e293b;
 }
 
 [data-theme="dark"] .chart-card:hover {
-    background: #0d1520;
-    border-color: rgba(56, 189, 248, 0.3);
+    background: #0c1420;
+    border-color: #0284c7;
+}
+
+[data-theme="dark"] .purifier-instrument-panel {
+    background: #0f172a !important;
+    border-color: #1e293b !important;
+    border-top-color: #0284c7 !important;
+}
+
+[data-theme="dark"] .instrument-box {
+    background: #090e17;
+    border-color: #1e293b;
 }
 
 [data-theme="dark"] .chart-title-bar h3 {
@@ -2084,4 +2512,36 @@ body, .card, .charts-section, .chart-card, .cms-wrapper, .cms-sidebar, .privacy-
 
 [data-theme="dark"] .checkbox-group {
     color: #cbd5e1;
+}
+
+/* ============================================================================
+ * ESTILOS DE INSTRUMENTO SUS Y CAPACIDADES RÚBRICA 8VO SEMESTRE
+ * ============================================================================ */
+.sus-slider {
+    width: calc(100% - 30px);
+    vertical-align: middle;
+    margin-right: 8px;
+    accent-color: var(--primary-teal);
+    cursor: pointer;
+}
+
+.sus-slider + output {
+    font-weight: 700;
+    color: var(--primary-teal);
+    display: inline-block;
+    width: 20px;
+    text-align: right;
+}
+
+.ica-highlight-card, .iot-health-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ica-highlight-card:hover, .iot-health-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+}
+
+[data-theme="dark"] .sus-slider + output {
+    color: #38bdf8;
 }
